@@ -270,7 +270,7 @@ export default function CompareRatesClient({
               }
             }}
           >
-            {isRefreshing ? "Updating..." : "See today&apos;s rates"}
+            See today&apos;s rates
           </button>
         </div>
       </div>
