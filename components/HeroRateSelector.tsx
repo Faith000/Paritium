@@ -150,7 +150,7 @@ export default function HeroRateSelector({
             }
           }}
         >
-          {isRefreshing ? "Updating..." : "See Today&apos;s Rates"}
+          See Today&apos;s Rates
         </button>
       </div>
       <div className="best-rate-summary">
