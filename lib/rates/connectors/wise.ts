@@ -9,13 +9,13 @@ type WiseRateResponse = {
 
 export const wiseConnector: RateProviderConnector = {
   providerId: "wise",
-  enabled: Boolean(process.env.WISE_API_TOKEN),
+  enabled: Boolean(getWiseToken()),
   async fetchRate(request, context) {
-    const token = process.env.WISE_API_TOKEN;
+    const token = getWiseToken();
     const baseUrl = process.env.WISE_API_BASE_URL ?? "https://api.wise.com";
 
     if (!token) {
-      throw new Error("WISE_API_TOKEN is not configured");
+      throw new Error("WISE_API_TOKEN or WISE_API_KEY is not configured");
     }
 
     const url = new URL("/v1/rates", baseUrl);
@@ -52,3 +52,7 @@ export const wiseConnector: RateProviderConnector = {
     };
   }
 };
+
+function getWiseToken() {
+  return process.env.WISE_API_TOKEN ?? process.env.WISE_API_KEY;
+}

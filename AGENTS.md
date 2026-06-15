@@ -175,6 +175,7 @@ Current connector architecture:
 - Registered live connectors live in `lib/rates/connectors/index.ts`.
 - `fetchRates(pair)` in `lib/rates/service.ts` combines configured live connectors, provider-level fallback quotes, and remaining mock providers, then sorts by best rate.
 - `/api/rates` must call the rate service, not hardcoded provider arrays.
+- Client-facing rate refresh flows on the homepage and Compare Rates page should fetch `/api/rates?pair=...`; direct mock helpers are only initial fallbacks for fast first render.
 - Live connector secrets must be read only from server environment variables and must never be exposed to client components.
 - Keep mock fallback data until a provider has a production-ready connector and confirmed public display permission.
 

@@ -77,8 +77,10 @@ export default function CompareRatesClient({
   const [selectedPair, setSelectedPair] = useState<CurrencyPair>("GBP_NGN");
   const [draftFromCurrency, setDraftFromCurrency] = useState("GBP");
   const [draftToCurrency, setDraftToCurrency] = useState("NGN");
+  const [liveRatesByPair, setLiveRatesByPair] = useState(ratesByPair);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const rates = ratesByPair[selectedPair];
+  const rates = liveRatesByPair[selectedPair] ?? ratesByPair[selectedPair];
   const averageRate = useMemo(
     () => rates.reduce((total, rate) => total + rate.rate, 0) / rates.length,
     [rates]
@@ -116,6 +118,34 @@ export default function CompareRatesClient({
       setDraftToCurrency(nextToCurrency);
     }
   }, [pairs, searchParams]);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    setIsRefreshing(true);
+
+    fetchPairRates(selectedPair)
+      .then((providerRates) => {
+        if (!isCurrent) return;
+
+        setLiveRatesByPair((currentRates) => ({
+          ...currentRates,
+          [selectedPair]: providerRates
+        }));
+      })
+      .catch(() => {
+        // Keep the bundled fallback rates visible if the API is unavailable.
+      })
+      .finally(() => {
+        if (isCurrent) {
+          setIsRefreshing(false);
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [selectedPair]);
 
   return (
     <section className="compare-workspace section-pad" aria-labelledby="rates-title">
@@ -202,9 +232,9 @@ export default function CompareRatesClient({
           </label>
           <button
             className="button button-primary compare-refresh-button"
-            disabled={!draftPair}
+            disabled={!draftPair || isRefreshing}
             type="button"
-            onClick={(event) => {
+            onClick={async (event) => {
               const controls = event.currentTarget.closest(
                 ".compare-currency-selectors"
               );
@@ -224,9 +254,23 @@ export default function CompareRatesClient({
               setDraftToCurrency(nextToCurrency);
               setSelectedPair(nextPair);
               persistSelectedPair(nextPair);
+              setIsRefreshing(true);
+
+              try {
+                const providerRates = await fetchPairRates(nextPair);
+
+                setLiveRatesByPair((currentRates) => ({
+                  ...currentRates,
+                  [nextPair]: providerRates
+                }));
+              } catch {
+                // Keep the current fallback rates visible.
+              } finally {
+                setIsRefreshing(false);
+              }
             }}
           >
-            See today&apos;s rates
+            {isRefreshing ? "Updating..." : "See today&apos;s rates"}
           </button>
         </div>
       </div>
@@ -427,6 +471,20 @@ export default function CompareRatesClient({
       </div>
     </section>
   );
+}
+
+async function fetchPairRates(pair: CurrencyPair) {
+  const response = await fetch(`/api/rates?pair=${pair}`, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to fetch provider rates");
+  }
+
+  const data = (await response.json()) as { providers: ProviderRate[] };
+
+  return data.providers;
 }
 
 function ProviderDetails({ rate }: { rate: ProviderRate }) {
