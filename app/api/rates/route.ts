@@ -1,18 +1,10 @@
 import { NextResponse } from "next/server";
-import { getRates, type CurrencyPair } from "@/lib/rates";
-
-const allowedPairs = new Set(["USD_NGN", "GBP_NGN", "EUR_NGN", "CAD_NGN"]);
+import { fetchRates, normalizeCurrencyPair } from "@/lib/rates";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const requestedPair = searchParams.get("pair") ?? "GBP_NGN";
-  const pair = allowedPairs.has(requestedPair)
-    ? (requestedPair as CurrencyPair)
-    : "GBP_NGN";
+  const pair = normalizeCurrencyPair(searchParams.get("pair"));
+  const rates = await fetchRates(pair);
 
-  return NextResponse.json({
-    pair,
-    refreshedAt: new Date().toISOString(),
-    providers: getRates(pair)
-  });
+  return NextResponse.json(rates);
 }

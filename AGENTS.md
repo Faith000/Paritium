@@ -98,7 +98,9 @@ Note: `npm run lint` uses `next lint`, which may require configuration depending
 - `app/sitemap.ts` and `app/robots.ts`: SEO discovery routes.
 - `components/SiteHeader.tsx`: shared responsive header, primary navigation, active route state, CTA, and mobile hamburger menu.
 - `components/SiteFooter.tsx`: shared footer.
-- `lib/rates.ts`: current mock/configured provider rate data, logos, provider links, survey URLs, and helper functions.
+- `lib/rates.ts`: compatibility facade for rate types, mock helpers, and the async rate service.
+- `lib/rates/`: provider metadata, currency-pair config, mock fallback data, connector contracts, and rate-service orchestration.
+- `lib/rates/connectors/`: one provider connector per module. `wise.ts` is scaffolded and activates only when `WISE_API_TOKEN` is configured.
 - `app/globals.css`: design tokens, layout primitives, component styling, responsive rules.
 
 ## Current Functional Surface
@@ -152,7 +154,7 @@ Keep provider data normalized around these fields:
 - `supportedCurrencies`
 - `transferMethods`
 
-When adding live integrations, preserve the frontend-facing shape unless there is a clear migration plan. New providers should be addable through configuration or a self-contained connector module without rewriting table rendering.
+When adding live integrations, preserve the frontend-facing shape unless there is a clear migration plan. New providers should be addable through provider metadata plus a self-contained connector module without rewriting table rendering.
 
 Future connector architecture should support:
 
@@ -162,6 +164,19 @@ Future connector architecture should support:
 - Graceful API failure handling.
 - Manual refresh capability for admins without a redeploy.
 - At least 20 provider integrations over time.
+
+Current connector architecture:
+
+- Shared types live in `lib/rates/types.ts`.
+- Currency pairs live in `lib/rates/pairs.ts`.
+- Provider display metadata lives in `lib/rates/provider-metadata.ts`.
+- Mock fallback data lives in `lib/rates/mock-data.ts`.
+- Connector contracts live in `lib/rates/connectors/types.ts`.
+- Registered live connectors live in `lib/rates/connectors/index.ts`.
+- `fetchRates(pair)` in `lib/rates/service.ts` combines configured live connectors, provider-level fallback quotes, and remaining mock providers, then sorts by best rate.
+- `/api/rates` must call the rate service, not hardcoded provider arrays.
+- Live connector secrets must be read only from server environment variables and must never be exposed to client components.
+- Keep mock fallback data until a provider has a production-ready connector and confirmed public display permission.
 
 ## UX And Content Principles
 
@@ -340,6 +355,7 @@ The repo currently uses mock/configured rate data, not live provider APIs.
 Inputs still needed for production:
 
 - Confirmed provider API access and rate limits.
+- Wise production/sandbox base URL and token, using `WISE_API_BASE_URL` and `WISE_API_TOKEN` locally.
 - Real provider website URLs.
 - Real App Store and Google Play URLs for each provider.
 - Final Paritium survey URL or embed code.
