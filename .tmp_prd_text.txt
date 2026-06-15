@@ -1,0 +1,726 @@
+
+
+--- PAGE 1 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  1 of 17 
+ 
+PRODUCT REQUIREMENTS DOCUMENT 
+Paritium – Exchange Rate Comparison Website 
+Version 1.1  |  June 2026 
+ 
+Attribute Detail 
+Product Name Paritium 
+Product URL https://paritium.com 
+Document Type Product Requirements Document (PRD) 
+Version 1.1 
+Document Owner Greenvine Technologies & EccentricLLC 
+Prepared By Greenvine Technologies & EccentricLLC 
+Date June 2026 
+Status DRAFT – For Review 
+ 
+Table of Contents 
+Table of Contents ................................ ................................ ................................ ....................... 1 
+1. Executive Summary ................................ ................................ ................................ ............... 2 
+2. Product Overview ................................ ................................ ................................ ................... 3 
+2.1 Product Vision ................................ ................................ ................................ .................. 3 
+2.2 Product Goals ................................ ................................ ................................ ................... 3 
+2.3 Target Users ................................ ................................ ................................ ..................... 3 
+2.4 Product URL ................................ ................................ ................................ ..................... 3 
+3. Stakeholders & Roles ................................ ................................ ................................ ............. 3 
+4. Project Scope ................................ ................................ ................................ ......................... 4 
+4.1 In Scope ................................ ................................ ................................ ........................... 4 
+4.2 Out of Scope (Current Phase) ................................ ................................ .......................... 4 
+5. Recommended Website Page Structure ................................ ................................ ................ 4 
+6. Functional Requirements ................................ ................................ ................................ ....... 9 
+Overview ................................ ................................ ................................ ............................. 9 
+Functional Requirements ................................ ................................ ................................ .... 9 
+Acceptance Criteria ................................ ................................ ................................ ............. 9 
+Overview ................................ ................................ ................................ ............................. 9 
+
+
+--- PAGE 2 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  2 of 17 
+Functional Requirements ................................ ................................ ................................ .... 9 
+Acceptance Criteria ................................ ................................ ................................ ............10 
+Overview ................................ ................................ ................................ ............................10 
+Functional Requirements ................................ ................................ ................................ ...10 
+Acceptance Criteria ................................ ................................ ................................ ............11 
+Overview ................................ ................................ ................................ ............................11 
+Functional Requirements ................................ ................................ ................................ ...11 
+Acceptance Criteria ................................ ................................ ................................ ............12 
+Overview ................................ ................................ ................................ ............................12 
+Functional Requirements ................................ ................................ ................................ ...12 
+Acceptance Criteria ................................ ................................ ................................ ............12 
+Overview ................................ ................................ ................................ ............................13 
+Functional Requirements — Partner Provider App Links ................................ ....................13 
+Functional Requirements — Paritium App Links (Future) ................................ ...................13 
+Acceptance Criteria ................................ ................................ ................................ ............13 
+7. Non-Functional Requirements ................................ ................................ ............................... 13 
+8. Recommended Technical Stack ................................ ................................ ............................14 
+9. Delivery Milestones ................................ ................................ ................................ ...............15 
+10. Assumptions & Dependencies................................ ................................ .............................15 
+10.1 Assumptions ................................ ................................ ................................ ..................15 
+10.2 Dependencies................................ ................................ ................................ ................15 
+11. Risks & Mitigations ................................ ................................ ................................ ..............15 
+12. Acceptance Criteria Summary ................................ ................................ .............................16 
+13. Document Sign-Off ................................ ................................ ................................ ..............16 
+Appendix: Glossary ................................ ................................ ................................ ...................17 
+ 
+ 
+1. Executive Summary 
+Paritium is a web-based exchange rate comparison platform designed to help consumers and 
+businesses identify the most competitive foreign exchange (FX) rates across multiple currency 
+exchange providers. The platform aggregates live rates from integrated exchange platforms, 
+enabling users to make informed, transparent decisions about their currency conversions and 
+international money transfers. 
+ 
+This PRD defines the functional and non-functional requirements for the development of the 
+Paritium website. It captures the six core development tasks derived from stakeholder input and 
+
+
+--- PAGE 3 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  3 of 17 
+aligns them to product goals, technical specifications, delivery milestones, and a recommended 
+website page structure. 
+ 
+The website will serve as the primary digital touchpoint for Paritium, complementing a 
+companion mobile application (currently in development), and will be engineered to be scalable, 
+secure, and analytics-ready from day one. This document is prepared by Greenvine 
+Technologies & EccentricLLC. 
+ 
+2. Product Overview 
+2.1 Product Vision 
+To be the most trusted, transparent, and user-friendly platform for comparing real-time foreign 
+exchange rates across multiple providers — empowering users to maximise the value of every 
+currency transaction. 
+ 
+2.2 Product Goals 
+• Aggregate live exchange rates from multiple FX platforms in one unified interface 
+• Enable users to compare rates side-by-side and identify the best deal 
+• Display survey links and app download links for partner transfer providers 
+• Capture user feedback and behaviour data to continuously improve the product 
+• Establish a scalable, secure technical foundation that supports future growth 
+• Provide a seamless bridge between the website and the Paritium mobile app upon 
+launch 
+ 
+2.3 Target Users 
+• Individuals sending money internationally (remittance users) 
+• Travellers seeking competitive rates before currency exchange 
+• Small businesses managing multi-currency payments 
+• Diaspora communities monitoring home-currency rates (including NGN and other 
+emerging market currencies) 
+ 
+2.4 Product URL 
+https://paritium.com 
+ 
+3. Stakeholders & Roles 
+
+
+--- PAGE 4 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  4 of 17 
+Role Name / Team Responsibility 
+Product Owner Greenvine Technologies & 
+EccentricLLC 
+Requirements, prioritisation, 
+acceptance 
+Development Team Faith Technical build, API integrations, 
+deployment 
+Co-Founder / Partner Greenvine Technologies & 
+EccentricLLC 
+Product vision, business 
+strategy 
+End Users General Public / Diaspora Platform usage, survey 
+participation 
+Analytics Stakeholders Greenvine Technologies & 
+EccentricLLC 
+Traffic data, KPI monitoring 
+ 
+4. Project Scope 
+4.1 In Scope 
+• Website development at paritium.com 
+• Live exchange rate API integrations (multiple providers) 
+• Daily/periodic rate update mechanism 
+• Survey links to partner transfer provider surveys, embedded on the website 
+• App download links for international transfer companies (e.g. Wise, Remitly, 
+WorldRemit, TapTap, Lemfi, others) 
+• Paritium user feedback survey integration and lead capture 
+• Web analytics setup and tracking 
+• Scalable API architecture for future provider additions 
+• Secure infrastructure configuration 
+• Paritium app download link placement (future-ready) 
+ 
+4.2 Out of Scope (Current Phase) 
+• Paritium mobile app development (separate workstream) 
+• User account registration / login portal 
+• Currency exchange transaction facilitation 
+ 
+5. Recommended Website Page Structure 
+The following section defines the recommended page layout and content architecture for the 
+Paritium website. Each page is described with its purpose, key sections, and content 
+requirements. 
+ 
+
+
+--- PAGE 5 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  5 of 17 
+🖥  PAGE: HOME PAGE (paritium.com) 
+ 
+Purpose: Primary landing page — introduce Paritium, showcase live rates, and drive user 
+engagement. 
+ 
+SECTION 1 – Navigation Bar (All Pages) 
+• Paritium logo (top left) 
+• Navigation links: Home | Compare Rates | How It Works | About | Survey | Download App  
+• CTA button: 'Compare Rates Now' (accent colour) 
+• Mobile: collapsible hamburger menu 
+ 
+SECTION 2 – Hero Banner 
+• Headline: e.g. 'Find the Best Exchange Rate – Instantly' 
+• Sub-headline: e.g. 'Compare today's live FX rates from leading transfer providers and pick the best 
+deal' 
+• Currency pair selector: From currency / To currency (no amount input — rates shown as published 
+by providers) 
+• Primary CTA button: 'See Today's Rates' 
+• Trust indicators: e.g. 'Updated every hour | 10+ providers compared | Free to use' 
+ 
+SECTION 3 – Live Rate Comparison Table 
+• Table columns: Provider logo, Provider name, Today's exchange rate, Last updated timestamp, 'Visit 
+Website' button, App download icons (App Store / Google Play) 
+• Sorted by best rate by default (highest rate at top) 
+• 'Best Rate Today' badge on the top-ranked provider 
+• Timestamp showing last rate update per provider 
+• Staleness indicator if rate data is older than 2 hours 
+• Currency pair selector (e.g. USD/NGN, GBP/NGN) to switch which rates are displayed — no amount 
+entry required 
+• 'Visit Website' button opens the provider's website in a new tab 
+• App Store and Google Play icons per provider — clicking downloads that provider's app directly 
+• No calculator or send-amount input — Paritium shows published rates only 
+ 
+SECTION 4 – Survey Prompt Banner 
+• Short banner: 'Help us improve Paritium — share your experience' 
+• Embedded Typeform / Google Form widget or link button 
+• Can be dismissed; re-appears on next visit after 7 days 
+
+
+--- PAGE 6 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  6 of 17 
+ 
+SECTION 5 – How It Works 
+• 3-step visual: 1) Choose your currency pair → 2) Compare today's live rates side by side → 3) Click 
+the best rate to visit the provider or download their app 
+• Brief copy explaining Paritium is a rate comparison tool, not a transfer service 
+ 
+SECTION 6 – App Download Section (Future-Ready) 
+• Headline: 'Get the Paritium App — Coming Soon' 
+• Apple App Store badge (disabled / greyed out until launch) 
+• Google Play badge (disabled / greyed out until launch) 
+• Email capture form: 'Notify me when the app launches' 
+• Activatable via config variable when app goes live 
+ 
+SECTION 7 – Footer (All Pages) 
+• Paritium logo and tagline 
+• Quick links: Home | Compare Rates | About | Privacy Policy | Terms of Use 
+• Social media icons (Twitter/X, LinkedIn, Instagram) 
+• Disclaimer: 'Paritium is a rate comparison service. We are not a money transfer provider.' 
+• Copyright: © 2026 Paritium | Greenvine Technologies & EccentricLLC 
+• Cookie consent notice link 
+ 
+🖥  PAGE: COMPARE RATES PAGE (/compare) 
+ 
+Purpose: Full provider rate comparison display — users see all integrated providers' 
+rates for the day, ranked best to worst, and can go directly to a provider or download 
+their app. 
+ 
+SECTION 1 – Currency Pair Selector 
+• Simple dropdown: From currency / To currency (e.g. USD → NGN, GBP → NGN, EUR → USD)  
+• Selecting a pair instantly refreshes the table below — no form submission or search needed 
+• Default pair shown on page load (configurable by admin) 
+• No amount input field — Paritium displays the provider's published exchange rate only 
+ 
+SECTION 2 – Provider Rate Comparison Table 
+• All integrated providers listed in one clear table 
+
+
+--- PAGE 7 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  7 of 17 
+• Columns: Provider logo | Provider name | Today's exchange rate | Last updated | Visit Website | 
+Download App 
+• Sorted by best (highest) rate at the top by default 
+• 'Best Rate Today' badge on the top-ranked provider row 
+• Timestamp per provider showing when rate was last fetched 
+• Staleness warning displayed if any rate is older than 2 hours 
+• 'Visit Website' button — opens the provider's own website in a new tab 
+• App Store icon and Google Play icon per provider — clicking goes directly to that provider's app 
+listing 
+• Survey link per provider row: 'Share your experience with [Provider]' — opens survey form 
+ 
+SECTION 3 – Provider Information Panel 
+• Expandable row per provider: shows brief description, supported currencies, and transfer methods  
+• No fee comparison or calculator — rates only 
+• Direct link to provider's website and app store pages 
+ 
+🖥  PAGE: HOW IT WORKS PAGE (/how-it-works) 
+ 
+Purpose: Educate users on how Paritium works and build trust. 
+ 
+SECTION 1 – Step-by-Step Explainer 
+• Step 1: Select your currency pair (e.g. USD to NGN) 
+• Step 2: View today's live rates from all integrated providers, ranked best to worst 
+• Step 3: Click 'Visit Website' on the provider with the best rate, or tap their app icon to download their 
+app 
+• Step 4: Complete your transfer directly on the provider's secure platform 
+ 
+SECTION 2 – FAQ Section 
+• Is Paritium free to use? Yes — Paritium is completely free. We do not charge for rate comparisons. 
+• Does Paritium execute transfers? No — we show you the best rates and direct you to the provider's 
+own platform. 
+• How often are rates updated? Rates are refreshed at least every 60 minutes. 
+• Do I need to enter an amount to compare rates? No — Paritium displays each provider's published 
+exchange rate so you can compare directly. 
+• How do I download a provider's app? Click the App Store or Google Play icon next to any provider in 
+the comparison table. 
+ 
+
+
+--- PAGE 8 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  8 of 17 
+🖥  PAGE: ABOUT PAGE (/about) 
+ 
+Purpose: Build brand trust, explain the company mission, and introduce the team. 
+ 
+SECTION 1 – Our Mission 
+• Mission statement: Paritium exists to bring transparency and fairness to foreign exchange.  
+• Brief background on the founding team: Greenvine Technologies & EccentricLLC  
+• Why Paritium was built: the problem we are solving for diaspora communities and international 
+senders 
+ 
+SECTION 2 – Our Partners / Integrated Providers 
+• Logos of all integrated FX providers 
+• Brief note: 'Paritium has no commercial relationship with listed providers — all rates are fetched 
+independently' 
+ 
+SECTION 3 – Contact / Feedback CTA 
+• Contact email address 
+• Link to the Paritium user survey 
+• Social media links 
+ 
+🖥  PAGE: SURVEY PAGE (/survey) 
+ 
+Purpose: Dedicated page for user feedback and research data collection. 
+ 
+SECTION 1 – Paritium User Survey 
+• Embedded survey (Typeform / Google Forms) 
+• Questions covering: currency pairs used, frequency of transfers, preferred providers, satisfaction 
+with Paritium, feature requests 
+• Thank you message / confirmation on submission 
+ 
+SECTION 2 – Provider-Specific Survey Links 
+• List of partner transfer providers 
+• Per provider: provider logo + 'Share your experience with [Provider]' link — opens provider's own 
+feedback form or a Paritium-hosted form 
+• Purpose: Aggregate user sentiment data about each provider to enrich comparison data  
+ 
+
+
+--- PAGE 9 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  9 of 17 
+6. Functional Requirements 
+The following six tasks represent the core functional requirements for the Paritium website, as 
+defined by the product stakeholders at Greenvine Technologies and EccentricLLC. 
+ 
+T1 Live Exchange Rate API Integration 
+ 
+Overview 
+The website must integrate with the public APIs or rate-scraping endpoints of exchange 
+platforms (e.g., Wise, Remitly, WorldRemit, TapTap, Lemfi, and others) to fetch live FX rates 
+and display them in real time to website visitors. 
+ 
+Functional Requirements 
+• Integrate with a minimum of 3 exchange platform APIs at launch, with capacity for more 
+• Display live exchange rates per provider on the homepage rate comparison table 
+• Implement a scheduled rate-refresh mechanism (minimum: every 60 minutes; target: 
+real-time or near-real-time) 
+• Show timestamp of last rate update for each provider 
+• Handle API failures gracefully — display last known rate with a staleness indicator 
+• Support configuration of which currency pairs to display (e.g., USD/NGN, GBP/NGN, 
+EUR/NGN, CAD/NGN) 
+ 
+Acceptance Criteria 
+◦ Rates from at least 3 providers are displayed on page load without manual refresh  
+◦ Rate update timestamps are accurate and reflect the last successful API call 
+◦ If an API is down, the page does not crash — a fallback message is shown 
+◦ Rate refresh can be triggered manually by the admin without a full deployment 
+ 
+T2 Survey Integration & Lead Capture 
+ 
+Overview 
+The website must embed or link to survey tools to collect user feedback and capture data about 
+provider experiences. This includes a Paritium platform survey and individual provider-specific 
+survey links. Survey responses must be stored and accessible for analysis by the Greenvine 
+Technologies and EccentricLLC product team. 
+ 
+Functional Requirements 
+• Embed or display a prominent Paritium survey link/widget (homepage, /survey page, 
+post-rate-check screen) 
+
+
+--- PAGE 10 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  10 of 17 
+• Display provider-specific survey links on the Compare Rates page and /survey page — 
+one per integrated provider 
+• Support integration with a third-party survey tool (e.g., Typeform, Google Forms, 
+SurveyMonkey) 
+• Capture the following minimum data points: user currency pair of interest, frequency of 
+use, preferred provider, satisfaction rating 
+• Store survey responses in a dashboard accessible to the Greenvine Technologies & 
+EccentricLLC product team 
+• Optional: trigger a survey prompt after 30 seconds of user inactivity or upon exit intent 
+ 
+Acceptance Criteria 
+◦ Paritium survey link or embedded form is visible and accessible without login 
+◦ Provider-specific survey links are present next to each provider row on the Compare Rates 
+page 
+◦ Submitted responses are logged in the connected survey platform within 5 minutes  
+◦ Admin can export survey responses as CSV or PDF 
+ 
+T3 Web Analytics & User Behaviour Tracking 
+ 
+Overview 
+Web analytics must be implemented to give Greenvine Technologies and EccentricLLC full 
+visibility into how many users visit the website, which providers attract the most interest, which 
+app download links are clicked, and how users navigate the site. This data will drive product 
+decisions, provider prioritisation, and marketing strategy. 
+ 
+Functional Requirements 
+• Implement Google Analytics 4 (GA4) as the primary analytics platform 
+• Supplement GA4 with a secondary tool such as Hotjar or Microsoft Clarity for session 
+recordings and heatmaps 
+• Track the following USER VISIT metrics: 
+◦ Total daily, weekly, and monthly unique visitors 
+◦ New vs returning visitors 
+◦ Session duration and pages per session 
+◦ Bounce rate per page 
+◦ Traffic sources: organic search, direct, referral, social media, paid 
+◦ Geographic location of visitors (country, city) 
+◦ Device type: mobile, tablet, desktop 
+◦ Browser and operating system 
+• Track the following USER TRANSACTION / INTERACTION events: 
+◦ Currency pair selected (e.g. user selected USD → NGN) — log the pair chosen 
+◦ Provider row viewed or expanded — log which provider and which currency pair 
+
+
+--- PAGE 11 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  11 of 17 
+◦ 'Visit Website' button clicked — log provider name, currency pair, and timestamp 
+◦ App Store icon clicked — log provider name, platform (iOS/Android), and timestamp 
+◦ Google Play icon clicked — log provider name, platform, and timestamp 
+◦ Survey link clicked (Paritium survey) — log page origin and timestamp 
+◦ Provider-specific survey link clicked — log which provider 
+◦ Paritium app download CTA clicked (when live) — log platform and timestamp 
+◦ 'Notify me at launch' email form submitted — log submission count (no PII stored) 
+◦ Time spent on Compare Rates page before clicking a provider 
+• Build a custom GA4 dashboard (or Looker Studio report) showing: 
+◦ Total site visits — daily/weekly/monthly 
+◦ Top providers by 'Visit Website' clicks 
+◦ Top providers by app download clicks (App Store vs Google Play split) 
+◦ Most popular currency pairs viewed 
+◦ Survey completion rate 
+◦ Traffic sources breakdown 
+• Ensure cookie consent banner is displayed and analytics only activates after user 
+consent (GDPR / CCPA compliance) 
+• Analytics dashboard must be accessible to Greenvine Technologies & EccentricLLC 
+team without requiring developer access 
+ 
+Acceptance Criteria 
+◦ GA4 is firing page view and custom events on all pages from day one of launch  
+◦ Every 'Visit Website' and app download click is logged as a named GA4 event with provider 
+and currency pair as parameters 
+◦ Real-time visitor count is visible in the GA4 dashboard 
+◦ Custom Looker Studio or GA4 report is delivered to stakeholders within 2 weeks of go -live 
+◦ Cookie consent is captured before analytics tracking activates — no tracking without consent 
+ 
+T4 Scalable API Architecture 
+ 
+Overview 
+The website's backend must be architected to support the seamless addition of new exchange 
+platform API integrations over time, without requiring major refactoring or downtime. 
+ 
+Functional Requirements 
+• Design a modular API connector layer where each exchange provider is a self-contained 
+integration module 
+• Use a standardised data schema for all rate data (provider name, currency pair, buy 
+rate, sell rate, timestamp, source URL, app store links) 
+• New providers must be addable by updating a configuration file or adding a new 
+connector module — no changes to core frontend logic 
+
+
+--- PAGE 12 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  12 of 17 
+• Rate aggregation service must be independently deployable (e.g., a serverless function 
+or microservice) 
+• Support a minimum of 20 provider integrations within the architecture without 
+performance degradation 
+• Document the integration pattern so that future developers can onboard new providers 
+independently 
+ 
+Acceptance Criteria 
+◦ A new provider can be added to the platform within 2 hours of developer time (post -initial 
+setup) 
+◦ Architecture documentation is delivered alongside the codebase 
+◦ Load testing confirms no degradation with 10+ concurrent provider API calls 
+ 
+T5 Secure Infrastructure 
+ 
+Overview 
+The platform must be built and hosted on a secure, reliable infrastructure that protects user 
+data, prevents unauthorised access, and meets industry-standard security practices. 
+ 
+Functional Requirements 
+• All traffic must be served over HTTPS (SSL/TLS certificate required — e.g., Let's 
+Encrypt or CDN-provided) 
+• API keys and credentials for third-party services must be stored as environment 
+variables — never hardcoded in the codebase 
+• Implement rate limiting on any backend API endpoints to prevent abuse 
+• Apply Content Security Policy (CSP), X-Frame-Options, and other standard HTTP 
+security headers 
+• No personally identifiable information (PII) collected or stored without explicit user 
+consent 
+• Hosting environment must support automated backups (daily minimum) 
+• Regular dependency vulnerability scans (e.g., npm audit, Snyk) as part of the CI/CD 
+pipeline 
+• DDoS protection via CDN (e.g., Cloudflare) 
+ 
+Acceptance Criteria 
+◦ SSL certificate is active and auto-renewing at launch 
+◦ Security headers are validated via securityheaders.com — minimum Grade B 
+◦ No API keys appear in the public codebase or browser network requests 
+◦ Penetration testing or security audit completed prior to public launch 
+ 
+
+
+--- PAGE 13 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  13 of 17 
+T6 App Download Links — Paritium & Partner Providers 
+ 
+Overview 
+The website must display App Store and Google Play download links for international transfer 
+companies (e.g., Wise, Remitly, WorldRemit, TapTap, Lemfi and others) within the rate 
+comparison table. Additionally, the website must reserve space for the Paritium mobile app 
+download links, which will go live once the app is released. 
+ 
+Functional Requirements — Partner Provider App Links 
+• Display Apple App Store and Google Play Store icons next to each provider in the 
+comparison table 
+• Each icon links directly to the provider's app listing on the respective store (opens in a 
+new tab) 
+• App links must be stored in the provider configuration file so they can be updated without 
+code changes 
+• Track all provider app download link click events via the analytics layer (Task 3) 
+• Display tooltip on hover: e.g. 'Download the Wise app on the App Store' 
+ 
+Functional Requirements — Paritium App Links (Future) 
+• Reserve a prominent section on the homepage and in the nav for Paritium app download 
+CTAs 
+• Display Apple App Store and Google Play Store badges — initially in a 'Coming Soon' 
+disabled state 
+• On app launch, update links to live store URLs by changing a single configuration 
+variable 
+• Optionally include a 'Notify me at launch' email capture for interested users 
+ 
+Acceptance Criteria 
+◦ App download icons are visible for each provider in the comparison table at launch  
+◦ Each icon correctly links to the provider's own app store page 
+◦ Paritium 'Coming soon' app section renders correctly on mobile, tablet, and desktop 
+◦ Store links can be activated for Paritium by updating a single config variable 
+◦ Click events are tracked in GA4 for both provider and Paritium app download links  
+ 
+7. Non-Functional Requirements 
+Requirement Target 
+Page Load Speed < 3 seconds on 4G mobile (target < 1.5s on broadband) 
+Uptime / Availability 99.5% uptime SLA (excluding scheduled maintenance) 
+
+
+--- PAGE 14 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  14 of 17 
+Requirement Target 
+Browser Support Chrome, Firefox, Safari, Edge — latest 2 major versions 
+Mobile Responsiveness Fully responsive — optimised for iOS and Android mobile 
+browsers 
+Accessibility WCAG 2.1 Level AA compliance 
+SEO Readiness Semantic HTML, meta tags, Open Graph tags, sitemap.xml, 
+robots.txt 
+Scalability Architecture supports 10,000+ concurrent users without 
+degradation 
+Data Freshness Exchange rates updated at minimum every 60 minutes; real-
+time where API allows 
+Internationalisation Currency display supports ISO 4217 formatting; future i18n 
+architecture ready 
+ 
+8. Recommended Technical Stack 
+The following stack is recommended based on the scalability, security, and integration 
+requirements outlined in this PRD. Final stack decisions remain with Faith (Development Team) 
+subject to sign-off from Greenvine Technologies and EccentricLLC. 
+ 
+Layer Recommended Technology Notes 
+Frontend React.js / Next.js SSR for SEO; fast renders; broad 
+ecosystem 
+Backend / API Layer Node.js (Express) or Python 
+(FastAPI) 
+Modular connector architecture 
+Rate Aggregation Serverless functions (AWS Lambda 
+/ Vercel) 
+Cost-effective, auto-scaling 
+Database / Cache Redis (rate cache) + PostgreSQL 
+(survey data) 
+Low-latency rate lookups 
+Hosting Vercel / AWS / Cloudflare Pages CDN-native, edge performance 
+CDN / Security Cloudflare DDoS, caching, SSL termination 
+Analytics Google Analytics 4 (GA4) Free tier sufficient for launch phase 
+Survey Tool Typeform or Google Forms Easy embed, CSV export 
+Monitoring UptimeRobot + Sentry Uptime alerts + error tracking 
+CI/CD GitHub Actions Automated testing and deployment 
+ 
+
+
+--- PAGE 15 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  15 of 17 
+9. Delivery Milestones 
+Phase Milestone Key Deliverables Target 
+Phase 1 Discovery & Design Wireframes, tech stack sign-off, API 
+provider list, page structure approved 
+Week 1–2 
+Phase 2 Core Development Homepage, rate comparison table, 3 API 
+integrations, provider app links 
+Week 3–6 
+Phase 3 Analytics & Survey GA4, cookie consent, Paritium survey + 
+provider survey links live 
+Week 5–7 
+Phase 4 Security & Hardening SSL, CSP headers, API key security, 
+pen test 
+Week 7–8 
+Phase 5 App CTAs & Scalability Provider app download links, Paritium 
+coming-soon CTA, modular API 
+architecture 
+Week 8–9 
+Phase 6 QA & Launch UAT, cross-browser testing, go-live Week 9–10 
+ 
+10. Assumptions & Dependencies 
+10.1 Assumptions 
+• Exchange platform APIs used for rate fetching are publicly available or access has been 
+confirmed 
+• The paritium.com domain is owned and DNS is under Greenvine Technologies / 
+EccentricLLC control 
+• The Paritium mobile app is a separate development workstream and is not blocking 
+website launch 
+• Survey tool accounts and analytics accounts will be set up by the Greenvine 
+Technologies & EccentricLLC team 
+• Provider app store URLs are publicly available and will be configured at build time 
+ 
+10.2 Dependencies 
+• Third-party API availability and rate limits from exchange platforms 
+• Survey platform account creation and form configuration (Typeform / Google Forms) 
+• Google Analytics 4 property setup and measurement ID 
+• SSL certificate provisioning (auto via Cloudflare or Let's Encrypt) 
+• Paritium mobile app completion for Paritium app download links to go live 
+ 
+11. Risks & Mitigations 
+
+
+--- PAGE 16 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  16 of 17 
+Risk Likelihood Impact Mitigation 
+API provider changes or 
+deprecates endpoint 
+Medium High Use cached rates; monitor API 
+health; maintain fallback providers 
+Rate data staleness 
+misleading users 
+Medium High Show clear timestamps; display 
+staleness warning after 2+ hours 
+Security breach or data leak Low Critical Implement all Task 5 controls; run 
+pen test before go-live 
+Poor survey response rate Medium Low Incentivise participation; A/B test 
+placement and timing 
+Paritium mobile app delayed 
+— CTA section unused 
+High Low Ship 'coming soon' state; capture 
+email interest list 
+CDN / hosting downtime Low High 99.5% SLA hosting; monitoring + 
+alerts; failover DNS 
+Provider app store URLs 
+become stale 
+Low Medium Store all links in config file; review 
+quarterly 
+ 
+12. Acceptance Criteria Summary 
+Task Key Acceptance Criteria 
+T1 – API 
+Integration 
+Live rates from ≥3 providers; auto-refresh; graceful API failure handling; timestamp 
+display 
+T2 – Survey Paritium survey + provider survey links accessible; responses logged; admin CSV 
+export available 
+T3 – Analytics GA4 + heatmap tool live; visit counts, provider clicks, app download clicks, currency 
+pair selections all tracked; custom dashboard delivered to stakeholders 
+T4 – 
+Scalability 
+New provider addable in <2hrs dev time; load tested; architecture documented  
+T5 – Security SSL active; security headers Grade B+; no exposed API keys; backup configured  
+T6 – App 
+Links 
+Provider app icons in comparison table; Paritium 'coming soon' CTA visible; all clicks 
+tracked 
+ 
+13. Document Sign-Off 
+This PRD is to be reviewed and approved by the following stakeholders before development 
+commences. 
+ 
+
+
+--- PAGE 17 ---
+PARITIUM | Product Requirements Document CONFIDENTIAL | v1.1 
+Paritium – Exchange Rate Comparison Platform  |  Greenvine Technologies & EccentricLLC  |  17 of 17 
+Name / Organisation Role Signature Date 
+Greenvine Technologies & 
+EccentricLLC 
+Product Owner        A.O & D.A 06/04/2026 
+Greenvine Technologies & 
+EccentricLLC 
+Co-Founder / Partner A.O & D.A 06/04/2026 
+Faith Development Lead   
+ 
+Appendix: Glossary 
+Term Definition 
+API Application Programming Interface – a connection point between software 
+systems 
+CDN Content Delivery Network – distributes website assets globally for faster 
+delivery 
+CSP Content Security Policy – HTTP header that prevents cross-site scripting 
+attacks 
+FX / Forex Foreign Exchange – the conversion of one currency to another 
+GA4 Google Analytics 4 – Google's current web analytics platform 
+GDPR General Data Protection Regulation – EU data privacy law 
+CCPA California Consumer Privacy Act – US data privacy law 
+PRD Product Requirements Document – defines what a product must do 
+SSL/TLS Secure Sockets Layer / Transport Layer Security – encryption protocol for 
+HTTPS 
+UAT User Acceptance Testing – final testing phase before launch 
+WCAG Web Content Accessibility Guidelines – accessibility standards for web 
+content 
+ 
+End of Document 

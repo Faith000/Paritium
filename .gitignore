@@ -1,0 +1,14 @@
+.DS_Store
+.next/
+node_modules/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+*.log
+.env
+.env.*
+!.env.example
+*.zip
+3d-rendering-dark-earth-space.jpg
+d102d5fa30366c5d67b4d808f92f709f.webp
