@@ -231,8 +231,9 @@ h6 {
   opacity: 0.78;
   pointer-events: none;
   position: absolute;
-  right: max(-170px, -6vw);
-  top: -170px;
+  right: max(-180px, -7vw);
+  top: 52%;
+  transform: translateY(-50%);
   transform-origin: 50% 50%;
   width: min(72vw, 760px);
   z-index: 0;
@@ -245,11 +246,11 @@ h6 {
 
 @keyframes hero-globe-spin {
   from {
-    transform: rotate(0deg);
+    transform: translateY(-50%) rotate(0deg);
   }
 
   to {
-    transform: rotate(360deg);
+    transform: translateY(-50%) rotate(360deg);
   }
 }
 
@@ -307,8 +308,8 @@ h6 {
 
   .hero::before {
     height: min(62vw, 900px);
-    right: max(-220px, -7vw);
-    top: -220px;
+    right: max(-180px, -7vw);
+    top: 52%;
     width: min(62vw, 900px);
   }
 
@@ -3414,7 +3415,7 @@ tbody tr:has(.row-detail-toggle:checked) + .provider-detail-row {
     height: 520px;
     opacity: 0.42;
     right: -250px;
-    top: -120px;
+    top: 28%;
     width: 520px;
   }
 
