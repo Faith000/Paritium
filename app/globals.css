@@ -221,9 +221,37 @@ h6 {
   position: relative;
 }
 
+.hero::before {
+  animation: hero-globe-spin 28s linear infinite;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0) 58%, rgba(255, 255, 255, 0.72) 100%),
+    url("/globe-wireframe-pattern.svg") center / contain no-repeat;
+  content: "";
+  height: min(72vw, 760px);
+  opacity: 0.78;
+  pointer-events: none;
+  position: absolute;
+  right: max(-180px, -7vw);
+  top: 52%;
+  transform: translateY(-50%);
+  transform-origin: 50% 50%;
+  width: min(72vw, 760px);
+  z-index: 0;
+}
+
 .hero > * {
   position: relative;
   z-index: 1;
+}
+
+@keyframes hero-globe-spin {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
 }
 
 .hero-copy h1 {
@@ -261,6 +289,10 @@ h6 {
   .hero-title-accent {
     animation: none;
   }
+
+  .hero::before {
+    animation: none;
+  }
 }
 
 @media (min-width: 1440px) {
@@ -272,6 +304,11 @@ h6 {
   .hero {
     gap: clamp(72px, 6vw, 112px);
     grid-template-columns: minmax(0, 1fr) minmax(460px, 540px);
+  }
+
+  .hero::before {
+    height: min(62vw, 900px);
+    width: min(62vw, 900px);
   }
 
   .hero-copy h1 {
@@ -3370,6 +3407,14 @@ tbody tr:has(.row-detail-toggle:checked) + .provider-detail-row {
   .hero {
     grid-template-columns: 1fr;
     padding-top: 34px;
+  }
+
+  .hero::before {
+    height: 520px;
+    opacity: 0.42;
+    right: -260px;
+    top: 28%;
+    width: 520px;
   }
 
   .hero-rate-card {

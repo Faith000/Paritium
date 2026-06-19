@@ -22,7 +22,12 @@ export default function SurveyPage() {
             the providers they trust, and the features that would make exchange
             rate decisions easier.
           </p>
-          <a className="button button-primary survey-hero-cta" href="/survey?form=paritium">
+          <a
+            className="button button-primary survey-hero-cta"
+            href="https://s.surveyplanet.com/ug5yk3hj"
+            target="_blank"
+            rel="noreferrer"
+          >
             Start Paritium survey
           </a>
         </div>
