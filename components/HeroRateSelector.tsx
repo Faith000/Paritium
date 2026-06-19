@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { CurrencyPair, ProviderRate } from "@/lib/rates";
+import { useState } from "react";
+import type { CurrencyPair } from "@/lib/rates";
 
 type PairOption = {
   value: CurrencyPair;
@@ -9,11 +9,9 @@ type PairOption = {
 };
 
 export default function HeroRateSelector({
-  pairs,
-  ratesByPair
+  pairs
 }: {
   pairs: PairOption[];
-  ratesByPair: Record<CurrencyPair, ProviderRate[]>;
 }) {
   const fromCurrencies = Array.from(
     new Set(pairs.map((pair) => pair.label.split(" → ")[0]))
@@ -23,44 +21,11 @@ export default function HeroRateSelector({
   );
   const [fromCurrency, setFromCurrency] = useState("GBP");
   const [toCurrency, setToCurrency] = useState("NGN");
-  const [selectedPair, setSelectedPair] = useState<CurrencyPair>("GBP_NGN");
-  const [liveRatesByPair, setLiveRatesByPair] = useState(ratesByPair);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const selectedRates = liveRatesByPair[selectedPair] ?? ratesByPair[selectedPair];
-  const bestRate = selectedRates[0];
-  const averageRate =
-    selectedRates.reduce((total, rate) => total + rate.rate, 0) /
-    selectedRates.length;
-  const bestRateLift = bestRate.rate - averageRate;
-  const selectedPairLabel =
-    pairs.find((pair) => pair.value === selectedPair)?.label.replace(" → ", " to ") ??
-    "selected route";
   const draftPair = getPairValue(pairs, fromCurrency, toCurrency);
-  const compareHref = `/compare?pair=${selectedPair}`;
-
-  useEffect(() => {
-    let isCurrent = true;
-
-    fetchPairRates(selectedPair)
-      .then((rates) => {
-        if (!isCurrent) return;
-
-        setLiveRatesByPair((currentRates) => ({
-          ...currentRates,
-          [selectedPair]: rates
-        }));
-      })
-      .catch(() => {
-        // Keep the bundled fallback rates if the API is temporarily unavailable.
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [selectedPair]);
+  const compareHref = `/compare?pair=${draftPair ?? "GBP_NGN"}#rates-title`;
 
   return (
-    <>
+    <div className="hero-route-launcher">
       <div className="rate-selector">
         <label>
           From
@@ -111,12 +76,16 @@ export default function HeroRateSelector({
             </select>
           </span>
         </label>
-        <button
+        <a
           className="button button-primary"
-          disabled={!draftPair || isRefreshing}
-          type="button"
-          onClick={async (event) => {
-            event.preventDefault();
+          aria-disabled={!draftPair}
+          href={draftPair ? compareHref : undefined}
+          onClick={(event) => {
+            if (!draftPair) {
+              event.preventDefault();
+              return;
+            }
+
             const controls = event.currentTarget.closest(".rate-selector");
             const nextFromCurrency =
               controls?.querySelector<HTMLSelectElement>(
@@ -132,57 +101,18 @@ export default function HeroRateSelector({
 
             setFromCurrency(nextFromCurrency);
             setToCurrency(nextToCurrency);
-            setSelectedPair(nextPair);
             persistSelectedPair(nextPair);
-            setIsRefreshing(true);
-
-            try {
-              const rates = await fetchPairRates(nextPair);
-
-              setLiveRatesByPair((currentRates) => ({
-                ...currentRates,
-                [nextPair]: rates
-              }));
-            } catch {
-              // Keep the current fallback rates visible.
-            } finally {
-              setIsRefreshing(false);
-            }
           }}
         >
           See Today&apos;s Rates
-        </button>
-      </div>
-      <div className="best-rate-summary">
-        <div>
-          <span>Best published rate today</span>
-          <strong>{bestRate.rateLabel}</strong>
-          <p>
-            <b className="best-rate-provider">{bestRate.provider}</b> is currently{" "}
-            <b>+{bestRateLift.toFixed(2)} NGN</b> above the average shown for{" "}
-            {selectedPairLabel}.
-          </p>
-        </div>
-        <a className="button button-secondary" href={compareHref}>
-          See all provider rates
         </a>
       </div>
-    </>
+      <div className="hero-launch-note">
+        <span>Published provider rates only</span>
+        <span>No transfer handled by Paritium</span>
+      </div>
+    </div>
   );
-}
-
-async function fetchPairRates(pair: CurrencyPair) {
-  const response = await fetch(`/api/rates?pair=${pair}`, {
-    cache: "no-store"
-  });
-
-  if (!response.ok) {
-    throw new Error("Unable to fetch provider rates");
-  }
-
-  const data = (await response.json()) as { providers: ProviderRate[] };
-
-  return data.providers;
 }
 
 function getPairValue(

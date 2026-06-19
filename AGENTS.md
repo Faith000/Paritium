@@ -182,6 +182,7 @@ Current connector architecture:
 ## UX And Content Principles
 
 - Lead with the actual comparison experience, not a marketing-only landing page.
+- The homepage hero should launch users into the Compare Rates table. Keep the selector CTA linked to `/compare?pair=...#rates-title`; do not reintroduce a best-rate summary card in the hero.
 - Keep copy transparent, practical, and confidence-building.
 - Use "published rates" language when describing data.
 - Mention that checkout rates may differ because providers can change rates or fees.

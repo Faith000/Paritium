@@ -1,4 +1,4 @@
-import { getAllRates, getCurrencyPairs, getRates } from "@/lib/rates";
+import { getCurrencyPairs, getRates } from "@/lib/rates";
 import type { ProviderLogo as ProviderLogoType } from "@/lib/rates";
 import HeroRateSelector from "@/components/HeroRateSelector";
 import SiteFooter from "@/components/SiteFooter";
@@ -6,7 +6,6 @@ import SiteHeader from "@/components/SiteHeader";
 
 const pairs = getCurrencyPairs();
 const rates = getRates("GBP_NGN");
-const ratesByPair = getAllRates();
 
 const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
@@ -29,6 +28,7 @@ export default function Home() {
             Compare today&apos;s live FX rates from leading transfer providers and
             pick the best deal
           </p>
+          <HeroRateSelector pairs={pairs} />
           <div className="hero-actions">
             <a className="button hero-download-cta" href="#app-title">
               <PhoneIcon />
@@ -54,9 +54,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hero-panel hero-rate-card" aria-label="Exchange rate preview">
-          <HeroRateSelector pairs={pairs} ratesByPair={ratesByPair} />
-        </div>
+        <HeroProviderPreview />
       </section>
 
       <section className="proof-strip" aria-label="Platform proof points">
@@ -227,6 +225,39 @@ export default function Home() {
 
       <SiteFooter />
     </main>
+  );
+}
+
+function HeroProviderPreview() {
+  return (
+    <aside className="hero-panel hero-provider-preview" aria-label="Provider comparison preview">
+      <div className="hero-preview-top">
+        <span>Provider preview</span>
+        <strong>Compare, then continue with the provider.</strong>
+      </div>
+      <div className="hero-preview-list">
+        {rates.slice(0, 3).map((rate, index) => (
+          <article className="hero-preview-row" key={rate.provider}>
+            <span className="rank-pill">#{index + 1}</span>
+            <ProviderLogo
+              logo={rate.logo}
+              provider={rate.provider}
+              shortName={rate.shortName}
+            />
+            <div>
+              <strong>{rate.provider}</strong>
+              <span>Published rate tracked</span>
+            </div>
+            <em>{rate.stale ? "Stale" : "Fresh"}</em>
+          </article>
+        ))}
+      </div>
+      <div className="hero-preview-trust">
+        <span>Published rates only</span>
+        <span>Provider checkout</span>
+        <span>Freshness shown</span>
+      </div>
+    </aside>
   );
 }
 
