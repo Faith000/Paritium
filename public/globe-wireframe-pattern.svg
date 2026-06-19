@@ -1,14 +1,21 @@
 <svg width="760" height="760" viewBox="0 0 760 760" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="380" cy="380" r="312" stroke="#119B65" stroke-width="2.4" opacity="0.34"/>
-  <ellipse cx="380" cy="380" rx="312" ry="116" stroke="#174DE8" stroke-width="1.8" opacity="0.2"/>
-  <ellipse cx="380" cy="380" rx="312" ry="204" stroke="#119B65" stroke-width="1.8" opacity="0.16"/>
-  <ellipse cx="380" cy="380" rx="312" ry="270" stroke="#174DE8" stroke-width="1.8" opacity="0.13"/>
-  <ellipse cx="380" cy="380" rx="116" ry="312" stroke="#119B65" stroke-width="1.8" opacity="0.22"/>
-  <ellipse cx="380" cy="380" rx="204" ry="312" stroke="#174DE8" stroke-width="1.8" opacity="0.16"/>
-  <ellipse cx="380" cy="380" rx="270" ry="312" stroke="#119B65" stroke-width="1.8" opacity="0.12"/>
-  <path d="M68 380H692" stroke="#119B65" stroke-width="2" opacity="0.2"/>
-  <path d="M380 68V692" stroke="#174DE8" stroke-width="2" opacity="0.16"/>
-  <path d="M158 160C251 216 330 229 429 206C506 188 568 208 624 254" stroke="#119B65" stroke-width="2.2" stroke-linecap="round" opacity="0.18"/>
-  <path d="M119 459C214 416 304 408 397 438C488 468 563 453 638 405" stroke="#174DE8" stroke-width="2.2" stroke-linecap="round" opacity="0.16"/>
-  <path d="M200 585C285 548 366 544 445 572C497 590 544 592 591 571" stroke="#119B65" stroke-width="2.2" stroke-linecap="round" opacity="0.15"/>
+  <defs>
+    <clipPath id="globeClip">
+      <circle cx="380" cy="380" r="312"/>
+    </clipPath>
+  </defs>
+  <circle cx="380" cy="380" r="312" stroke="#119B65" stroke-width="3" opacity="0.44"/>
+  <g clip-path="url(#globeClip)">
+    <ellipse cx="380" cy="380" rx="312" ry="116" stroke="#174DE8" stroke-width="2.2" opacity="0.3"/>
+    <ellipse cx="380" cy="380" rx="312" ry="204" stroke="#119B65" stroke-width="2.2" opacity="0.24"/>
+    <ellipse cx="380" cy="380" rx="312" ry="270" stroke="#174DE8" stroke-width="2.2" opacity="0.2"/>
+    <ellipse cx="380" cy="380" rx="116" ry="312" stroke="#119B65" stroke-width="2.2" opacity="0.31"/>
+    <ellipse cx="380" cy="380" rx="204" ry="312" stroke="#174DE8" stroke-width="2.2" opacity="0.24"/>
+    <ellipse cx="380" cy="380" rx="270" ry="312" stroke="#119B65" stroke-width="2.2" opacity="0.19"/>
+    <path d="M68 380H692" stroke="#119B65" stroke-width="2.4" opacity="0.28"/>
+    <path d="M380 68V692" stroke="#174DE8" stroke-width="2.4" opacity="0.22"/>
+    <path d="M95 250C176 186 283 158 386 174C488 190 580 247 665 318" stroke="#119B65" stroke-width="2.4" stroke-linecap="round" opacity="0.24"/>
+    <path d="M75 432C176 389 286 379 389 407C492 435 588 421 685 362" stroke="#174DE8" stroke-width="2.4" stroke-linecap="round" opacity="0.23"/>
+    <path d="M124 560C222 503 332 493 437 527C523 555 596 548 660 511" stroke="#119B65" stroke-width="2.4" stroke-linecap="round" opacity="0.2"/>
+  </g>
 </svg>
