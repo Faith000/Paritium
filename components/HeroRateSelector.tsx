@@ -49,8 +49,9 @@ export default function HeroRateSelector({
           className="swap-currency-button"
           type="button"
           onClick={() => {
+            const currentIndex = fromCurrencies.indexOf(fromCurrency);
             const nextFromCurrency =
-              fromCurrencies.find((currency) => currency !== fromCurrency) ??
+              fromCurrencies[(currentIndex + 1) % fromCurrencies.length] ??
               fromCurrency;
 
             setFromCurrency(nextFromCurrency);
@@ -106,10 +107,6 @@ export default function HeroRateSelector({
         >
           See Today&apos;s Rates
         </a>
-      </div>
-      <div className="hero-launch-note">
-        <span>Published provider rates only</span>
-        <span>No transfer handled by Paritium</span>
       </div>
     </div>
   );

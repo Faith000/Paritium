@@ -197,10 +197,10 @@ export default function CompareRatesClient({
             className="swap-currency-button compare-swap-button"
             type="button"
             onClick={() => {
+              const currentIndex = fromCurrencyOptions.indexOf(draftFromCurrency);
               const nextFromCurrency =
-                fromCurrencyOptions.find(
-                  (currency) => currency !== draftFromCurrency
-                ) ?? draftFromCurrency;
+                fromCurrencyOptions[(currentIndex + 1) % fromCurrencyOptions.length] ??
+                draftFromCurrency;
 
               setDraftFromCurrency(nextFromCurrency);
               setDraftToCurrency(toCurrencyOptions[0] ?? "NGN");
@@ -380,7 +380,6 @@ export default function CompareRatesClient({
                       <td>
                         <input
                           className="row-detail-toggle"
-                          defaultChecked={index === 0}
                           id={detailsId}
                           type="checkbox"
                         />
