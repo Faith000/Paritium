@@ -15,9 +15,15 @@ export default function SiteFooter() {
           <h2>Quick links</h2>
           <a href="/">Home</a>
           <a href="/compare">Compare Rates</a>
+          <a href="/how-it-works">How It Works</a>
           <a href="/about">About</a>
+          <a href="/survey">Survey</a>
+        </div>
+        <div>
+          <h2>Legal</h2>
           <a href="/privacy">Privacy Policy</a>
           <a href="/terms">Terms of Use</a>
+          <a href="/privacy#cookies">Cookie notice</a>
         </div>
         <div>
           <h2>Connect</h2>
@@ -30,7 +36,6 @@ export default function SiteFooter() {
           <a href="https://instagram.com" target="_blank" rel="noreferrer">
             Instagram
           </a>
-          <a href="/cookies">Cookie notice</a>
         </div>
       </div>
       <div className="footer-bottom">

@@ -94,6 +94,8 @@ Note: `npm run lint` uses `next lint`, which may require configuration depending
 - `app/how-it-works/page.tsx`: educational explainer and FAQ.
 - `app/about/page.tsx`: mission, stakeholders, provider coverage, contact CTA.
 - `app/survey/page.tsx`: survey placeholder, provider-specific survey list, thank-you section.
+- `app/privacy/page.tsx`: privacy policy covering analytics consent, browser storage, surveys, external links, retention, and user rights.
+- `app/terms/page.tsx`: terms covering comparison scope, rate and ranking limitations, external providers, acceptable use, and liability boundaries.
 - `app/api/rates/route.ts`: JSON API for rate data by currency pair.
 - `app/sitemap.ts` and `app/robots.ts`: SEO discovery routes.
 - `components/SiteHeader.tsx`: shared responsive header, primary navigation, active route state, CTA, and mobile hamburger menu.
@@ -112,6 +114,8 @@ Implemented pages:
 - `/how-it-works`
 - `/about`
 - `/survey`
+- `/privacy`
+- `/terms`
 - `/api/rates?pair=GBP_NGN`
 - `/sitemap.xml`
 - `/robots.txt`
@@ -367,7 +371,8 @@ Inputs still needed for production:
 - GA4 measurement ID.
 - Hotjar or Microsoft Clarity project ID, if used.
 - Cookie consent implementation requirements.
-- Privacy Policy, Terms of Use, and Cookie Notice pages/copy.
+- Legal review of the Privacy Policy and confirmation of the responsible legal entity and mailing address.
+- Legal review of the Terms of Use, including confirmation of governing law and forum. Cookie disclosures currently live in `/privacy#cookies`.
 - Contact and social URLs.
 - Paritium app store URLs when launched.
 - Hosting/CDN/security-header requirements.
