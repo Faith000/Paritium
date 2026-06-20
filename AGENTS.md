@@ -267,6 +267,8 @@ The PRD requires:
 - Google Analytics 4 as the primary analytics platform.
 - A secondary behavior tool such as Hotjar or Microsoft Clarity.
 - Cookie consent before analytics activation.
+- Google Analytics is integrated globally through `components/GoogleAnalytics.tsx` and configured with `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
+- Do not load `gtag.js` until the visitor accepts analytics cookies. Preserve the persistent accept/reject controls and consent withdrawal path.
 - A stakeholder-accessible GA4 or Looker Studio dashboard.
 
 Events that should be tracked once analytics is implemented:
