@@ -2,18 +2,37 @@ import type { Metadata } from "next";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import "./globals.css";
 
+const siteTitle = "Paritium | Compare Live Exchange Rates";
+const siteDescription =
+  "Compare live provider-published exchange rates and find the best deal before you transfer.";
+
 export const metadata: Metadata = {
-  title: "Paritium | Compare live exchange rates",
-  description:
-    "Compare today's published foreign exchange rates from leading money transfer providers before you move money.",
+  title: siteTitle,
+  description: siteDescription,
   metadataBase: new URL("https://paritium.com"),
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }]
+  },
   openGraph: {
-    title: "Paritium | Compare live exchange rates",
-    description:
-      "Find the best published exchange rate across multiple transfer providers.",
+    title: siteTitle,
+    description: siteDescription,
     url: "https://paritium.com",
     siteName: "Paritium",
-    type: "website"
+    type: "website",
+    images: [
+      {
+        url: "/paritium-og-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Paritium homepage showing a live exchange-rate comparison"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/paritium-og-home.jpg"]
   }
 };
 

@@ -259,6 +259,8 @@ For new UI:
 
 - Keep metadata per page using Next.js `Metadata`.
 - Preserve `metadataBase` as `https://paritium.com`.
+- Use `public/paritium-og-home.jpg` as the default 1200x630 Open Graph and Twitter sharing image.
+- The favicon is the lowercase Paritium `p` mark in `app/icon.svg`.
 - Update `app/sitemap.ts` whenever adding public pages.
 - Keep `app/robots.ts` aligned with launch indexing requirements.
 - Use descriptive titles and meta descriptions.
