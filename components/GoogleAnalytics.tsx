@@ -1,12 +1,12 @@
 "use client";
 
-import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type AnalyticsConsent = "accepted" | "rejected";
 
 const CONSENT_STORAGE_KEY = "paritium_analytics_consent";
+const GOOGLE_ANALYTICS_SCRIPT_ID = "paritium-google-analytics";
 
 declare global {
   interface Window {
@@ -44,6 +44,14 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
 
     if (lastTrackedPath.current === null) {
       window.gtag("js", new Date());
+
+      if (!document.getElementById(GOOGLE_ANALYTICS_SCRIPT_ID)) {
+        const script = document.createElement("script");
+        script.async = true;
+        script.id = GOOGLE_ANALYTICS_SCRIPT_ID;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+        document.head.appendChild(script);
+      }
     }
 
     window.gtag("config", measurementId, { page_path: pathname });
@@ -68,14 +76,6 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
 
   return (
     <>
-      {consent === "accepted" ? (
-        <Script
-          id="paritium-google-analytics"
-          src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-          strategy="afterInteractive"
-        />
-      ) : null}
-
       {showPreferences ? (
         <section className="cookie-consent" aria-label="Analytics cookie preferences">
           <div>
