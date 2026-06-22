@@ -33,8 +33,17 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   }, []);
 
   useEffect(() => {
-    if (consent !== "accepted" || !window.gtag || lastTrackedPath.current === pathname) {
+    if (consent !== "accepted" || !measurementId || lastTrackedPath.current === pathname) {
       return;
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function gtag(...args: unknown[]) {
+      window.dataLayer.push(args);
+    };
+
+    if (lastTrackedPath.current === null) {
+      window.gtag("js", new Date());
     }
 
     window.gtag("config", measurementId, { page_path: pathname });
@@ -53,16 +62,6 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
     }
   }
 
-  function initializeAnalytics() {
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag(...args: unknown[]) {
-      window.dataLayer.push(args);
-    };
-    window.gtag("js", new Date());
-    window.gtag("config", measurementId, { page_path: pathname });
-    lastTrackedPath.current = pathname;
-  }
-
   if (!measurementId) {
     return null;
   }
@@ -74,7 +73,6 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
           id="paritium-google-analytics"
           src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
           strategy="afterInteractive"
-          onLoad={initializeAnalytics}
         />
       ) : null}
 

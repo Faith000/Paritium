@@ -39,6 +39,7 @@ export default function SurveyPage() {
             priority
             sizes="(max-width: 960px) calc(100vw - 40px), 48vw"
             src="/survey-research-hero.webp"
+            unoptimized
             width={1440}
           />
         </div>
