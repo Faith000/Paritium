@@ -17,8 +17,10 @@ declare global {
 
 export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   const pathname = usePathname();
+  const [analyticsReady, setAnalyticsReady] = useState(false);
   const [consent, setConsent] = useState<AnalyticsConsent | null>(null);
   const [showPreferences, setShowPreferences] = useState(false);
+  const configuredMeasurementId = useRef<string | null>(null);
   const lastTrackedPath = useRef<string | null>(null);
 
   useEffect(() => {
@@ -33,30 +35,71 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   }, []);
 
   useEffect(() => {
-    if (consent !== "accepted" || !measurementId || lastTrackedPath.current === pathname) {
+    if (consent !== "accepted" || !measurementId) {
       return;
     }
 
     window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function gtag(...args: unknown[]) {
-      window.dataLayer.push(args);
+    window.gtag = window.gtag || function gtag() {
+      window.dataLayer.push(arguments);
     };
 
-    if (lastTrackedPath.current === null) {
-      window.gtag("js", new Date());
+    const existingScript = document.getElementById(GOOGLE_ANALYTICS_SCRIPT_ID) as HTMLScriptElement | null;
 
-      if (!document.getElementById(GOOGLE_ANALYTICS_SCRIPT_ID)) {
-        const script = document.createElement("script");
-        script.async = true;
-        script.id = GOOGLE_ANALYTICS_SCRIPT_ID;
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-        document.head.appendChild(script);
+    function markAnalyticsReady() {
+      const script = document.getElementById(GOOGLE_ANALYTICS_SCRIPT_ID) as HTMLScriptElement | null;
+      if (script) {
+        script.dataset.loaded = "true";
       }
+      setAnalyticsReady(true);
     }
 
-    window.gtag("config", measurementId, { page_path: pathname });
+    if (existingScript) {
+      if (existingScript.dataset.loaded === "true") {
+        setAnalyticsReady(true);
+      } else {
+        existingScript.addEventListener("load", markAnalyticsReady, { once: true });
+      }
+    } else {
+      window.gtag("js", new Date());
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.id = GOOGLE_ANALYTICS_SCRIPT_ID;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+      script.addEventListener("load", markAnalyticsReady, { once: true });
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      existingScript?.removeEventListener("load", markAnalyticsReady);
+    };
+  }, [consent, measurementId]);
+
+  useEffect(() => {
+    if (
+      consent !== "accepted" ||
+      !analyticsReady ||
+      !measurementId ||
+      !window.gtag ||
+      lastTrackedPath.current === pathname
+    ) {
+      return;
+    }
+
+    if (configuredMeasurementId.current !== measurementId) {
+      window.gtag("config", measurementId, { send_page_view: false });
+      configuredMeasurementId.current = measurementId;
+    }
+
+    window.gtag("event", "page_view", {
+      page_location: window.location.href,
+      page_path: pathname,
+      page_title: document.title,
+      send_to: measurementId
+    });
     lastTrackedPath.current = pathname;
-  }, [consent, measurementId, pathname]);
+  }, [analyticsReady, consent, measurementId, pathname]);
 
   function saveConsent(nextConsent: AnalyticsConsent) {
     const analyticsWasLoaded = consent === "accepted";

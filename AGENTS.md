@@ -295,7 +295,7 @@ Events that should be tracked once analytics is implemented:
 
 Do not add analytics that fires before consent.
 
-Current implementation: `components/GoogleAnalytics.tsx` stores the visitor's analytics choice in local storage, queues the initial GA4 page view immediately after consent, then dynamically loads `gtag.js` so the queue always exists before Google processes it. It tracks subsequent App Router pathname changes. The measurement ID is supplied through `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
+Current implementation: `components/GoogleAnalytics.tsx` stores the visitor's analytics choice in local storage, initializes the Google command queue after consent, loads `gtag.js`, and sends an explicit GA4 `page_view` only after the library reports that it is ready. It tracks subsequent App Router pathname changes. The measurement ID is supplied through `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
 
 ## Security Requirements
 
