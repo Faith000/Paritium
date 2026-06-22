@@ -530,7 +530,12 @@ function ProviderLogo({
           <path d={logo.path} fill="currentColor" />
         </svg>
       ) : logo.type === "image" ? (
-        <img src={logo.src} alt={logo.alt || `${provider} logo`} />
+        <img
+          src={logo.src}
+          alt={logo.alt || `${provider} logo`}
+          decoding="async"
+          loading="lazy"
+        />
       ) : (
         <span className="provider-wordmark" aria-label={`${provider} logo`}>
           {logo.text || shortName}

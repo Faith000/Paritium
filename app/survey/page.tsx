@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 
@@ -32,9 +33,13 @@ export default function SurveyPage() {
           </a>
         </div>
         <div className="survey-hero-media" aria-label="People reviewing exchange-rate feedback">
-          <img
+          <Image
             alt="A diverse group reviewing survey feedback and exchange-rate comparison screens"
-            src="/survey-research-hero.png"
+            height={699}
+            priority
+            sizes="(max-width: 960px) calc(100vw - 40px), 48vw"
+            src="/survey-research-hero.webp"
+            width={1440}
           />
         </div>
       </section>

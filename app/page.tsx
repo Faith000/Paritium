@@ -1,5 +1,6 @@
 import { getCurrencyPairs, getRates } from "@/lib/rates";
 import type { ProviderLogo as ProviderLogoType } from "@/lib/rates";
+import Image from "next/image";
 import HeroRateSelector from "@/components/HeroRateSelector";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
@@ -391,10 +392,13 @@ function RankingIllustration() {
 function AppComingSoonMockup() {
   return (
     <div className="app-mockup" aria-hidden="true">
-      <img
+      <Image
         alt=""
         className="app-hand-photo"
-        src="/app-coming-soon-phone-mockup-transparent.png"
+        height={990}
+        sizes="(max-width: 620px) 300px, 330px"
+        src="/app-coming-soon-phone-mockup-transparent.webp"
+        width={660}
       />
     </div>
   );
@@ -469,7 +473,12 @@ function ProviderLogo({
           <path d={logo.path} fill="currentColor" />
         </svg>
       ) : logo.type === "image" ? (
-        <img src={logo.src} alt={logo.alt || `${provider} logo`} />
+        <img
+          src={logo.src}
+          alt={logo.alt || `${provider} logo`}
+          decoding="async"
+          loading="lazy"
+        />
       ) : (
         <span className="provider-wordmark" aria-label={`${provider} logo`}>
           {logo.text || shortName}

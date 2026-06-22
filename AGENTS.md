@@ -227,6 +227,8 @@ Layout:
 - Preserve stable table/mobile-card behavior for compare views.
 - Buttons use `.button`, `.button-primary`, `.button-secondary`, `.button-invert`, or `.text-button`.
 - Provider logos should use `.provider-logo` and `ProviderLogo` patterns already present in pages.
+- Use Next.js `Image` for local content images, with accurate dimensions and responsive `sizes` values.
+- Use optimized WebP assets for CSS background images. Reserve `priority` for above-the-fold hero media and lazy-load supporting imagery.
 
 Illustration direction:
 

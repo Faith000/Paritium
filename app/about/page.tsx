@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { getAllRates } from "@/lib/rates";
@@ -28,9 +29,13 @@ export default function AboutPage() {
           </p>
         </div>
         <div className="about-hero-media" aria-label="People comparing exchange providers">
-          <img
+          <Image
             alt="Product team reviewing global exchange rate comparison data"
-            src="/about-team-hero.png"
+            height={900}
+            priority
+            sizes="(max-width: 960px) calc(100vw - 40px), 48vw"
+            src="/about-team-hero.webp"
+            width={1200}
           />
         </div>
       </section>
@@ -169,7 +174,12 @@ function ProviderLogo({
           <path d={logo.path} fill="currentColor" />
         </svg>
       ) : logo.type === "image" ? (
-        <img src={logo.src} alt={logo.alt || `${provider} logo`} />
+        <img
+          src={logo.src}
+          alt={logo.alt || `${provider} logo`}
+          decoding="async"
+          loading="lazy"
+        />
       ) : (
         <span className="provider-wordmark" aria-label={`${provider} logo`}>
           {logo.text || shortName}

@@ -1150,7 +1150,7 @@ td a:hover {
 .compare-hero {
   background:
     linear-gradient(180deg, rgba(5, 5, 5, 0.72), rgba(5, 5, 5, 0.82)),
-    url("/provider-people-bg.png") center / cover no-repeat;
+    url("/provider-people-bg.webp") center / cover no-repeat;
   color: var(--color-white);
   min-height: 360px;
   text-align: center;
@@ -2351,7 +2351,7 @@ tbody tr:has(.row-detail-toggle:checked) + .provider-detail-row {
 .provider-section {
   background:
     linear-gradient(rgba(5, 5, 5, 0.66), rgba(5, 5, 5, 0.72)),
-    url("/provider-people-bg.png") center / cover no-repeat;
+    url("/provider-people-bg.webp") center / cover no-repeat;
   color: var(--color-white);
 }
 
@@ -2534,7 +2534,7 @@ tbody tr:has(.row-detail-toggle:checked) + .provider-detail-row {
 .how {
   background:
     linear-gradient(rgba(5, 5, 5, 0.64), rgba(5, 5, 5, 0.7)),
-    url("/how-it-works-hero.png") center / cover no-repeat;
+    url("/how-it-works-hero.webp") center / cover no-repeat;
   color: var(--color-white);
 }
 
