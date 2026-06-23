@@ -2,18 +2,11 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ANALYTICS_CONSENT_STORAGE_KEY } from "@/lib/analytics";
 
 type AnalyticsConsent = "accepted" | "rejected";
 
-const CONSENT_STORAGE_KEY = "paritium_analytics_consent";
 const GOOGLE_ANALYTICS_SCRIPT_ID = "paritium-google-analytics";
-
-declare global {
-  interface Window {
-    dataLayer: unknown[];
-    gtag?: (...args: unknown[]) => void;
-  }
-}
 
 export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   const pathname = usePathname();
@@ -24,7 +17,9 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   const lastTrackedPath = useRef<string | null>(null);
 
   useEffect(() => {
-    const storedConsent = window.localStorage.getItem(CONSENT_STORAGE_KEY);
+    const storedConsent = window.localStorage.getItem(
+      ANALYTICS_CONSENT_STORAGE_KEY
+    );
 
     if (storedConsent === "accepted" || storedConsent === "rejected") {
       setConsent(storedConsent);
@@ -104,7 +99,7 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   function saveConsent(nextConsent: AnalyticsConsent) {
     const analyticsWasLoaded = consent === "accepted";
 
-    window.localStorage.setItem(CONSENT_STORAGE_KEY, nextConsent);
+    window.localStorage.setItem(ANALYTICS_CONSENT_STORAGE_KEY, nextConsent);
     setConsent(nextConsent);
     setShowPreferences(false);
 

@@ -1,3 +1,5 @@
+import TrackedLink from "@/components/TrackedLink";
+
 export default function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -17,7 +19,13 @@ export default function SiteFooter() {
           <a href="/compare">Compare Rates</a>
           <a href="/how-it-works">How It Works</a>
           <a href="/about">About</a>
-          <a href="/survey">Survey</a>
+          <TrackedLink
+            eventName="paritium_survey_clicked"
+            eventParameters={{ page_origin: "footer_navigation" }}
+            href="/survey"
+          >
+            Survey
+          </TrackedLink>
         </div>
         <div>
           <h2>Legal</h2>

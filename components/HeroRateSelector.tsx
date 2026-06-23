@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CurrencyPair } from "@/lib/rates";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 
 type PairOption = {
   value: CurrencyPair;
@@ -103,6 +104,11 @@ export default function HeroRateSelector({
             setFromCurrency(nextFromCurrency);
             setToCurrency(nextToCurrency);
             persistSelectedPair(nextPair);
+            trackAnalyticsEvent("currency_pair_selected", {
+              currency_pair: nextPair,
+              from_currency: nextFromCurrency,
+              to_currency: nextToCurrency
+            });
           }}
         >
           See Today&apos;s Rates

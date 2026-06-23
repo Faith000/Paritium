@@ -7,6 +7,7 @@ import type {
   ProviderLogo as ProviderLogoType,
   ProviderRate
 } from "@/lib/rates";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 
 type PairOption = {
   value: CurrencyPair;
@@ -254,6 +255,11 @@ export default function CompareRatesClient({
               setDraftToCurrency(nextToCurrency);
               setSelectedPair(nextPair);
               persistSelectedPair(nextPair);
+              trackAnalyticsEvent("currency_pair_selected", {
+                currency_pair: nextPair,
+                from_currency: nextFromCurrency,
+                to_currency: nextToCurrency
+              });
               setIsRefreshing(true);
 
               try {
@@ -353,6 +359,13 @@ export default function CompareRatesClient({
                             href={rate.appStoreUrl}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={() =>
+                              trackAnalyticsEvent("provider_app_download_clicked", {
+                                currency_pair: selectedPair,
+                                platform: "ios",
+                                provider_name: rate.provider
+                              })
+                            }
                           >
                             <AppStoreIcon />
                             <span className="sr-only">App Store</span>
@@ -361,6 +374,13 @@ export default function CompareRatesClient({
                             href={rate.playStoreUrl}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={() =>
+                              trackAnalyticsEvent("provider_app_download_clicked", {
+                                currency_pair: selectedPair,
+                                platform: "android",
+                                provider_name: rate.provider
+                              })
+                            }
                           >
                             <GooglePlayIcon />
                             <span className="sr-only">Google Play</span>
@@ -373,6 +393,12 @@ export default function CompareRatesClient({
                           href={rate.websiteUrl}
                           target="_blank"
                           rel="noreferrer"
+                          onClick={() =>
+                            trackAnalyticsEvent("provider_visit_clicked", {
+                              currency_pair: selectedPair,
+                              provider_name: rate.provider
+                            })
+                          }
                         >
                           Visit Website
                         </a>
@@ -382,6 +408,14 @@ export default function CompareRatesClient({
                           className="row-detail-toggle"
                           id={detailsId}
                           type="checkbox"
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              trackAnalyticsEvent("provider_row_expanded", {
+                                currency_pair: selectedPair,
+                                provider_name: rate.provider
+                              });
+                            }
+                          }}
                         />
                         <label className="text-button row-detail-label" htmlFor={detailsId}>
                           <span className="details-label-closed">View</span>
@@ -441,21 +475,64 @@ export default function CompareRatesClient({
                 <span>{rate.supportedCurrencies.join(", ")}</span>
               </div>
               <div className="provider-card-actions">
-                <a className="mobile-primary-action" href={rate.websiteUrl} target="_blank" rel="noreferrer">
+                <a
+                  className="mobile-primary-action"
+                  href={rate.websiteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() =>
+                    trackAnalyticsEvent("provider_visit_clicked", {
+                      currency_pair: selectedPair,
+                      provider_name: rate.provider
+                    })
+                  }
+                >
                   Visit website
                 </a>
                 <span className="app-links">
-                  <a href={rate.appStoreUrl} target="_blank" rel="noreferrer">
+                  <a
+                    href={rate.appStoreUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() =>
+                      trackAnalyticsEvent("provider_app_download_clicked", {
+                        currency_pair: selectedPair,
+                        platform: "ios",
+                        provider_name: rate.provider
+                      })
+                    }
+                  >
                     <AppStoreIcon />
                     <span className="sr-only">App Store</span>
                   </a>
-                  <a href={rate.playStoreUrl} target="_blank" rel="noreferrer">
+                  <a
+                    href={rate.playStoreUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() =>
+                      trackAnalyticsEvent("provider_app_download_clicked", {
+                        currency_pair: selectedPair,
+                        platform: "android",
+                        provider_name: rate.provider
+                      })
+                    }
+                  >
                     <GooglePlayIcon />
                     <span className="sr-only">Google Play</span>
                   </a>
                 </span>
               </div>
-              <details className="mobile-details-toggle">
+              <details
+                className="mobile-details-toggle"
+                onToggle={(event) => {
+                  if (event.currentTarget.open) {
+                    trackAnalyticsEvent("provider_row_expanded", {
+                      currency_pair: selectedPair,
+                      provider_name: rate.provider
+                    });
+                  }
+                }}
+              >
                 <summary>
                   <span className="details-label-closed">View details</span>
                   <span className="details-label-open">Hide details</span>
@@ -504,6 +581,17 @@ function ProviderDetails({ rate }: { rate: ProviderRate }) {
       <div>
         <h4>Transfer methods</h4>
         <p>{rate.transferMethods.join(", ")}</p>
+        <a
+          className="text-button"
+          href={rate.surveyUrl}
+          onClick={() =>
+            trackAnalyticsEvent("provider_survey_clicked", {
+              provider_name: rate.provider
+            })
+          }
+        >
+          Share provider feedback
+        </a>
       </div>
     </div>
   );

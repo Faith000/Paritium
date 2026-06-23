@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 
 type SiteHeaderProps = {
   ctaHref?: Route;
@@ -54,6 +55,13 @@ export default function SiteHeader({
               aria-current={pathname === item.href ? "page" : undefined}
               href={item.href}
               key={item.href}
+              onClick={() => {
+                if (item.href === "/survey") {
+                  trackAnalyticsEvent("paritium_survey_clicked", {
+                    page_origin: `${pathname}:header_navigation`
+                  });
+                }
+              }}
             >
               {item.label}
             </Link>
@@ -62,6 +70,13 @@ export default function SiteHeader({
         <Link
           className="button button-primary nav-cta"
           href={ctaHref}
+          onClick={() => {
+            if (ctaHref === "/survey") {
+              trackAnalyticsEvent("paritium_survey_clicked", {
+                page_origin: `${pathname}:header_cta`
+              });
+            }
+          }}
         >
           {ctaLabel}
         </Link>

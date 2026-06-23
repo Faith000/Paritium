@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import TrackedLink from "@/components/TrackedLink";
 
 export const metadata: Metadata = {
   title: "Survey | Paritium",
@@ -23,14 +24,16 @@ export default function SurveyPage() {
             the providers they trust, and the features that would make exchange
             rate decisions easier.
           </p>
-          <a
+          <TrackedLink
             className="button button-primary survey-hero-cta"
+            eventName="paritium_survey_clicked"
+            eventParameters={{ page_origin: "survey_page_hero" }}
             href="https://s.surveyplanet.com/ug5yk3hj"
             target="_blank"
             rel="noreferrer"
           >
             Start Paritium survey
-          </a>
+          </TrackedLink>
         </div>
         <div className="survey-hero-media" aria-label="People reviewing exchange-rate feedback">
           <Image

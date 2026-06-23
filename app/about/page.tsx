@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import TrackedLink from "@/components/TrackedLink";
 import { getAllRates } from "@/lib/rates";
 import type { ProviderLogo as ProviderLogoType, ProviderRate } from "@/lib/rates";
 
@@ -134,9 +135,14 @@ export default function AboutPage() {
           </p>
         </div>
         <div className="contact-actions">
-          <a className="button button-invert" href="/survey">
+          <TrackedLink
+            className="button button-invert"
+            eventName="paritium_survey_clicked"
+            eventParameters={{ page_origin: "about_contact_cta" }}
+            href="/survey"
+          >
             Take the survey
-          </a>
+          </TrackedLink>
           <a className="button button-secondary" href="mailto:hello@paritium.com">
             hello@paritium.com
           </a>

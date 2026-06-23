@@ -2,8 +2,10 @@ import { getCurrencyPairs, getRates } from "@/lib/rates";
 import type { ProviderLogo as ProviderLogoType } from "@/lib/rates";
 import Image from "next/image";
 import HeroRateSelector from "@/components/HeroRateSelector";
+import NotifyMeForm from "@/components/NotifyMeForm";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import TrackedLink from "@/components/TrackedLink";
 
 const pairs = getCurrencyPairs();
 const rates = getRates("GBP_NGN");
@@ -30,10 +32,15 @@ export default function Home() {
             pick the best deal
           </p>
           <div className="hero-actions">
-            <a className="button hero-download-cta" href="#app-title">
+            <TrackedLink
+              className="button hero-download-cta"
+              eventName="paritium_app_cta_clicked"
+              eventParameters={{ platform: "web" }}
+              href="#app-title"
+            >
               <PhoneIcon />
               Download App
-            </a>
+            </TrackedLink>
             <a className="button button-secondary" href="#how-it-works">
               How it works
             </a>
@@ -152,10 +159,19 @@ export default function Home() {
         </div>
         <div className="route-grid">
           {pairs.map((pair) => (
-            <a href={`/compare?pair=${pair.value}`} key={pair.value}>
+            <TrackedLink
+              eventName="currency_pair_selected"
+              eventParameters={{
+                currency_pair: pair.value,
+                from_currency: pair.source,
+                to_currency: pair.target
+              }}
+              href={`/compare?pair=${pair.value}`}
+              key={pair.value}
+            >
               <RoutePairLabel label={pair.label} />
               <strong>Compare providers</strong>
-            </a>
+            </TrackedLink>
           ))}
         </div>
       </section>
@@ -169,13 +185,7 @@ export default function Home() {
             live, so you can save routes, monitor provider changes, and receive
             rate alerts on your phone.
           </p>
-          <form className="notify-form">
-            <label htmlFor="email">Email address</label>
-            <div>
-              <input id="email" type="email" placeholder="you@example.com" />
-              <button type="submit">Notify me</button>
-            </div>
-          </form>
+          <NotifyMeForm />
         </div>
         <AppComingSoonMockup />
       </section>
@@ -220,9 +230,14 @@ export default function Home() {
             build richer comparison data for real users.
           </p>
         </div>
-        <a className="button button-invert" href="/survey">
+        <TrackedLink
+          className="button button-invert"
+          eventName="paritium_survey_clicked"
+          eventParameters={{ page_origin: "homepage_survey_banner" }}
+          href="/survey"
+        >
           Take the survey
-        </a>
+        </TrackedLink>
       </section>
 
       <SiteFooter />
@@ -441,10 +456,25 @@ function ProviderCards() {
             <span>{rate.supportedCurrencies.length} currencies</span>
           </div>
           <div className="provider-card-actions">
-            <a href={rate.websiteUrl} target="_blank" rel="noreferrer">
+            <TrackedLink
+              eventName="provider_visit_clicked"
+              eventParameters={{
+                currency_pair: "GBP_NGN",
+                provider_name: rate.provider
+              }}
+              href={rate.websiteUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
               Website
-            </a>
-            <a href={rate.surveyUrl}>Feedback</a>
+            </TrackedLink>
+            <TrackedLink
+              eventName="provider_survey_clicked"
+              eventParameters={{ provider_name: rate.provider }}
+              href={rate.surveyUrl}
+            >
+              Feedback
+            </TrackedLink>
           </div>
         </article>
       ))}
