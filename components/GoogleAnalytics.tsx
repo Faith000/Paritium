@@ -132,15 +132,7 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
             </button>
           </div>
         </section>
-      ) : (
-        <button
-          className="cookie-preferences-trigger"
-          type="button"
-          onClick={() => setShowPreferences(true)}
-        >
-          Cookie preferences
-        </button>
-      )}
+      ) : null}
     </>
   );
 }
