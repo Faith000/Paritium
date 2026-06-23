@@ -58,10 +58,8 @@ export default function SiteHeader({
               onClick={() => {
                 if (item.href === "/survey") {
                   trackAnalyticsEvent("paritium_survey_clicked", {
-                    click_type: "survey",
                     cta_name: "survey_navigation",
-                    page_origin: `${pathname}:header_navigation`,
-                    survey_type: "general"
+                    page_origin: `${pathname}:header_navigation`
                   });
                 }
               }}
@@ -76,10 +74,8 @@ export default function SiteHeader({
           onClick={() => {
             if (ctaHref === "/survey") {
               trackAnalyticsEvent("paritium_survey_clicked", {
-                click_type: "survey",
                 cta_name: "share_feedback",
-                page_origin: `${pathname}:header_cta`,
-                survey_type: "general"
+                page_origin: `${pathname}:header_cta`
               });
             }
           }}

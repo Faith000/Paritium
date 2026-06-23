@@ -299,14 +299,14 @@ Current implementation: `components/GoogleAnalytics.tsx` stores the visitor's an
 
 Custom events are sent through the consent-aware `trackAnalyticsEvent` helper in `lib/analytics.ts`:
 
-- `currency_pair_selected`: `from_currency`, `to_currency`, `currency_pair`, `click_type`, `cta_name`.
-- `provider_row_expanded`: `provider_name`, `provider_rank`, `currency_pair`, `click_type`, `cta_name`.
-- `provider_visit_clicked`: `provider_name`, `provider_rank`, `currency_pair`, `click_type`, `cta_name`, `time_before_click` where the Compare Rates timer is available.
-- `provider_app_download_clicked`: `provider_name`, `provider_rank`, `platform`, `store_type`, `currency_pair`, `click_type`, `cta_name`, `time_before_click`.
-- `paritium_survey_clicked`: `page_origin`, `survey_type`, `click_type`, `cta_name`.
-- `provider_survey_clicked`: `provider_name`, `provider_rank` where available, `survey_type`, `click_type`, `cta_name`.
-- `notify_me_submitted`: `source_section`, `click_type`, `cta_name`; never send the entered email address to analytics.
-- `paritium_app_cta_clicked`: `platform`, `click_type`, `cta_name`; use `web` for the current generic coming-soon CTA.
+- `currency_pair_selected`: `from_currency`, `to_currency`, `currency_pair`, `cta_name`.
+- `provider_row_expanded`: `provider_name`, `provider_rank`, `currency_pair`, `cta_name`.
+- `provider_visit_clicked`: `provider_name`, `provider_rank`, `currency_pair`, `cta_name`, `time_before_click` where the Compare Rates timer is available.
+- `provider_app_download_clicked`: `provider_name`, `provider_rank`, `platform`, `store_type`, `currency_pair`, `cta_name`, `time_before_click`.
+- `paritium_survey_clicked`: `page_origin`, `cta_name`.
+- `provider_survey_clicked`: `provider_name`, `provider_rank` where available, `cta_name`.
+- `notify_me_submitted`: `source_section`, `cta_name`; never send the entered email address to analytics.
+- `paritium_app_cta_clicked`: `platform`, `cta_name`; use `web` for the current generic coming-soon CTA.
 
 ## Security Requirements
 

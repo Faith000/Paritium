@@ -28,10 +28,8 @@ export default function SurveyPage() {
             className="button button-primary survey-hero-cta"
             eventName="paritium_survey_clicked"
             eventParameters={{
-              click_type: "survey",
               cta_name: "start_paritium_survey",
-              page_origin: "survey_page_hero",
-              survey_type: "general"
+              page_origin: "survey_page_hero"
             }}
             href="https://s.surveyplanet.com/ug5yk3hj"
             target="_blank"

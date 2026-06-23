@@ -139,10 +139,8 @@ export default function AboutPage() {
             className="button button-invert"
             eventName="paritium_survey_clicked"
             eventParameters={{
-              click_type: "survey",
               cta_name: "take_the_survey",
-              page_origin: "about_contact_cta",
-              survey_type: "general"
+              page_origin: "about_contact_cta"
             }}
             href="/survey"
           >

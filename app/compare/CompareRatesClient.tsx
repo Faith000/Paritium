@@ -257,7 +257,6 @@ export default function CompareRatesClient({
               setSelectedPair(nextPair);
               persistSelectedPair(nextPair);
               trackAnalyticsEvent("currency_pair_selected", {
-                click_type: "currency_pair_selection",
                 cta_name: "see_todays_rates",
                 currency_pair: nextPair,
                 from_currency: nextFromCurrency,
@@ -364,7 +363,6 @@ export default function CompareRatesClient({
                             rel="noreferrer"
                             onClick={() =>
                               trackAnalyticsEvent("provider_app_download_clicked", {
-                                click_type: "app_download",
                                 cta_name: "app_store",
                                 currency_pair: selectedPair,
                                 platform: "ios",
@@ -384,7 +382,6 @@ export default function CompareRatesClient({
                             rel="noreferrer"
                             onClick={() =>
                               trackAnalyticsEvent("provider_app_download_clicked", {
-                                click_type: "app_download",
                                 cta_name: "google_play",
                                 currency_pair: selectedPair,
                                 platform: "android",
@@ -408,7 +405,6 @@ export default function CompareRatesClient({
                           rel="noreferrer"
                           onClick={() =>
                             trackAnalyticsEvent("provider_visit_clicked", {
-                              click_type: "visit_website",
                               cta_name: "visit_website",
                               currency_pair: selectedPair,
                               provider_name: rate.provider,
@@ -428,7 +424,6 @@ export default function CompareRatesClient({
                           onChange={(event) => {
                             if (event.target.checked) {
                               trackAnalyticsEvent("provider_row_expanded", {
-                                click_type: "provider_details",
                                 cta_name: "view_details",
                                 currency_pair: selectedPair,
                                 provider_name: rate.provider,
@@ -502,7 +497,6 @@ export default function CompareRatesClient({
                   rel="noreferrer"
                   onClick={() =>
                     trackAnalyticsEvent("provider_visit_clicked", {
-                      click_type: "visit_website",
                       cta_name: "visit_website",
                       currency_pair: selectedPair,
                       provider_name: rate.provider,
@@ -520,7 +514,6 @@ export default function CompareRatesClient({
                     rel="noreferrer"
                     onClick={() =>
                       trackAnalyticsEvent("provider_app_download_clicked", {
-                        click_type: "app_download",
                         cta_name: "app_store",
                         currency_pair: selectedPair,
                         platform: "ios",
@@ -540,7 +533,6 @@ export default function CompareRatesClient({
                     rel="noreferrer"
                     onClick={() =>
                       trackAnalyticsEvent("provider_app_download_clicked", {
-                        click_type: "app_download",
                         cta_name: "google_play",
                         currency_pair: selectedPair,
                         platform: "android",
@@ -561,7 +553,6 @@ export default function CompareRatesClient({
                 onToggle={(event) => {
                   if (event.currentTarget.open) {
                     trackAnalyticsEvent("provider_row_expanded", {
-                      click_type: "provider_details",
                       cta_name: "view_details",
                       currency_pair: selectedPair,
                       provider_name: rate.provider,
@@ -629,11 +620,9 @@ function ProviderDetails({
           href={rate.surveyUrl}
           onClick={() =>
             trackAnalyticsEvent("provider_survey_clicked", {
-              click_type: "survey",
               cta_name: "provider_feedback",
               provider_name: rate.provider,
-              provider_rank: providerRank,
-              survey_type: "provider_specific"
+              provider_rank: providerRank
             })
           }
         >

@@ -36,7 +36,6 @@ export default function Home() {
               className="button hero-download-cta"
               eventName="paritium_app_cta_clicked"
               eventParameters={{
-                click_type: "app_cta",
                 cta_name: "download_app",
                 platform: "web"
               }}
@@ -166,7 +165,6 @@ export default function Home() {
             <TrackedLink
               eventName="currency_pair_selected"
               eventParameters={{
-                click_type: "currency_pair_selection",
                 cta_name: "compare_providers",
                 currency_pair: pair.value,
                 from_currency: pair.source,
@@ -240,10 +238,8 @@ export default function Home() {
           className="button button-invert"
           eventName="paritium_survey_clicked"
           eventParameters={{
-            click_type: "survey",
             cta_name: "take_the_survey",
-            page_origin: "homepage_survey_banner",
-            survey_type: "general"
+            page_origin: "homepage_survey_banner"
           }}
           href="/survey"
         >
@@ -470,7 +466,6 @@ function ProviderCards() {
             <TrackedLink
               eventName="provider_visit_clicked"
               eventParameters={{
-                click_type: "visit_website",
                 cta_name: "visit_website",
                 currency_pair: "GBP_NGN",
                 provider_rank: index + 1,
@@ -485,11 +480,9 @@ function ProviderCards() {
             <TrackedLink
               eventName="provider_survey_clicked"
               eventParameters={{
-                click_type: "survey",
                 cta_name: "provider_feedback",
                 provider_name: rate.provider,
-                provider_rank: index + 1,
-                survey_type: "provider_specific"
+                provider_rank: index + 1
               }}
               href={rate.surveyUrl}
             >
