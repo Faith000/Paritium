@@ -3,23 +3,24 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import {
   trackAnalyticsEvent,
+  type AnalyticsEventMap,
   type AnalyticsEventName,
-  type AnalyticsEventParameters
 } from "@/lib/analytics";
 
-type TrackedLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+type TrackedLinkProps<EventName extends AnalyticsEventName> =
+  AnchorHTMLAttributes<HTMLAnchorElement> & {
   children: ReactNode;
-  eventName: AnalyticsEventName;
-  eventParameters?: AnalyticsEventParameters;
+  eventName: EventName;
+  eventParameters: AnalyticsEventMap[EventName];
 };
 
-export default function TrackedLink({
+export default function TrackedLink<EventName extends AnalyticsEventName>({
   children,
   eventName,
   eventParameters,
   onClick,
   ...props
-}: TrackedLinkProps) {
+}: TrackedLinkProps<EventName>) {
   return (
     <a
       {...props}
