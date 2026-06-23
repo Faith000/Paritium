@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type {
   CurrencyPair,
@@ -80,6 +80,7 @@ export default function CompareRatesClient({
   const [draftToCurrency, setDraftToCurrency] = useState("NGN");
   const [liveRatesByPair, setLiveRatesByPair] = useState(ratesByPair);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const compareStartedAt = useRef(Date.now());
 
   const rates = liveRatesByPair[selectedPair] ?? ratesByPair[selectedPair];
   const averageRate = useMemo(
@@ -256,6 +257,8 @@ export default function CompareRatesClient({
               setSelectedPair(nextPair);
               persistSelectedPair(nextPair);
               trackAnalyticsEvent("currency_pair_selected", {
+                click_type: "currency_pair_selection",
+                cta_name: "see_todays_rates",
                 currency_pair: nextPair,
                 from_currency: nextFromCurrency,
                 to_currency: nextToCurrency
@@ -361,9 +364,14 @@ export default function CompareRatesClient({
                             rel="noreferrer"
                             onClick={() =>
                               trackAnalyticsEvent("provider_app_download_clicked", {
+                                click_type: "app_download",
+                                cta_name: "app_store",
                                 currency_pair: selectedPair,
                                 platform: "ios",
-                                provider_name: rate.provider
+                                provider_name: rate.provider,
+                                provider_rank: index + 1,
+                                store_type: "app_store",
+                                time_before_click: getSecondsBeforeClick(compareStartedAt.current)
                               })
                             }
                           >
@@ -376,9 +384,14 @@ export default function CompareRatesClient({
                             rel="noreferrer"
                             onClick={() =>
                               trackAnalyticsEvent("provider_app_download_clicked", {
+                                click_type: "app_download",
+                                cta_name: "google_play",
                                 currency_pair: selectedPair,
                                 platform: "android",
-                                provider_name: rate.provider
+                                provider_name: rate.provider,
+                                provider_rank: index + 1,
+                                store_type: "google_play",
+                                time_before_click: getSecondsBeforeClick(compareStartedAt.current)
                               })
                             }
                           >
@@ -395,8 +408,12 @@ export default function CompareRatesClient({
                           rel="noreferrer"
                           onClick={() =>
                             trackAnalyticsEvent("provider_visit_clicked", {
+                              click_type: "visit_website",
+                              cta_name: "visit_website",
                               currency_pair: selectedPair,
-                              provider_name: rate.provider
+                              provider_name: rate.provider,
+                              provider_rank: index + 1,
+                              time_before_click: getSecondsBeforeClick(compareStartedAt.current)
                             })
                           }
                         >
@@ -411,8 +428,11 @@ export default function CompareRatesClient({
                           onChange={(event) => {
                             if (event.target.checked) {
                               trackAnalyticsEvent("provider_row_expanded", {
+                                click_type: "provider_details",
+                                cta_name: "view_details",
                                 currency_pair: selectedPair,
-                                provider_name: rate.provider
+                                provider_name: rate.provider,
+                                provider_rank: index + 1
                               });
                             }
                           }}
@@ -425,7 +445,7 @@ export default function CompareRatesClient({
                     </tr>
                     <tr className="provider-detail-row">
                       <td colSpan={6}>
-                        <ProviderDetails rate={rate} />
+                        <ProviderDetails providerRank={index + 1} rate={rate} />
                       </td>
                     </tr>
                   </Fragment>
@@ -482,8 +502,12 @@ export default function CompareRatesClient({
                   rel="noreferrer"
                   onClick={() =>
                     trackAnalyticsEvent("provider_visit_clicked", {
+                      click_type: "visit_website",
+                      cta_name: "visit_website",
                       currency_pair: selectedPair,
-                      provider_name: rate.provider
+                      provider_name: rate.provider,
+                      provider_rank: index + 1,
+                      time_before_click: getSecondsBeforeClick(compareStartedAt.current)
                     })
                   }
                 >
@@ -496,9 +520,14 @@ export default function CompareRatesClient({
                     rel="noreferrer"
                     onClick={() =>
                       trackAnalyticsEvent("provider_app_download_clicked", {
+                        click_type: "app_download",
+                        cta_name: "app_store",
                         currency_pair: selectedPair,
                         platform: "ios",
-                        provider_name: rate.provider
+                        provider_name: rate.provider,
+                        provider_rank: index + 1,
+                        store_type: "app_store",
+                        time_before_click: getSecondsBeforeClick(compareStartedAt.current)
                       })
                     }
                   >
@@ -511,9 +540,14 @@ export default function CompareRatesClient({
                     rel="noreferrer"
                     onClick={() =>
                       trackAnalyticsEvent("provider_app_download_clicked", {
+                        click_type: "app_download",
+                        cta_name: "google_play",
                         currency_pair: selectedPair,
                         platform: "android",
-                        provider_name: rate.provider
+                        provider_name: rate.provider,
+                        provider_rank: index + 1,
+                        store_type: "google_play",
+                        time_before_click: getSecondsBeforeClick(compareStartedAt.current)
                       })
                     }
                   >
@@ -527,8 +561,11 @@ export default function CompareRatesClient({
                 onToggle={(event) => {
                   if (event.currentTarget.open) {
                     trackAnalyticsEvent("provider_row_expanded", {
+                      click_type: "provider_details",
+                      cta_name: "view_details",
                       currency_pair: selectedPair,
-                      provider_name: rate.provider
+                      provider_name: rate.provider,
+                      provider_rank: index + 1
                     });
                   }
                 }}
@@ -538,7 +575,7 @@ export default function CompareRatesClient({
                   <span className="details-label-open">Hide details</span>
                 </summary>
                 <div className="mobile-provider-details">
-                  <ProviderDetails rate={rate} />
+                  <ProviderDetails providerRank={index + 1} rate={rate} />
                 </div>
               </details>
             </article>
@@ -563,7 +600,13 @@ async function fetchPairRates(pair: CurrencyPair) {
   return data.providers;
 }
 
-function ProviderDetails({ rate }: { rate: ProviderRate }) {
+function ProviderDetails({
+  providerRank,
+  rate
+}: {
+  providerRank: number;
+  rate: ProviderRate;
+}) {
   return (
     <div className="provider-details">
       <div>
@@ -586,7 +629,11 @@ function ProviderDetails({ rate }: { rate: ProviderRate }) {
           href={rate.surveyUrl}
           onClick={() =>
             trackAnalyticsEvent("provider_survey_clicked", {
-              provider_name: rate.provider
+              click_type: "survey",
+              cta_name: "provider_feedback",
+              provider_name: rate.provider,
+              provider_rank: providerRank,
+              survey_type: "provider_specific"
             })
           }
         >
@@ -595,6 +642,10 @@ function ProviderDetails({ rate }: { rate: ProviderRate }) {
       </div>
     </div>
   );
+}
+
+function getSecondsBeforeClick(startedAt: number) {
+  return Math.max(0, Math.round((Date.now() - startedAt) / 1000));
 }
 
 function ProviderLogo({

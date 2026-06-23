@@ -9,6 +9,8 @@ export default function NotifyMeForm() {
       onSubmit={(event) => {
         event.preventDefault();
         trackAnalyticsEvent("notify_me_submitted", {
+          click_type: "form_submit",
+          cta_name: "notify_me",
           source_section: "homepage_app_coming_soon"
         });
       }}

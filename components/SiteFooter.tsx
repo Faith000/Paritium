@@ -21,7 +21,12 @@ export default function SiteFooter() {
           <a href="/about">About</a>
           <TrackedLink
             eventName="paritium_survey_clicked"
-            eventParameters={{ page_origin: "footer_navigation" }}
+            eventParameters={{
+              click_type: "survey",
+              cta_name: "survey_navigation",
+              page_origin: "footer_navigation",
+              survey_type: "general"
+            }}
             href="/survey"
           >
             Survey

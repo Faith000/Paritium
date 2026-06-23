@@ -56,9 +56,9 @@ export default function AboutPage() {
           <article>
             <h3>Who is behind Paritium?</h3>
             <p>
-              Paritium is led by Greenvine Technologies and EccentricLLC, with
-              Faith driving the technical build, API architecture, and product
-              delivery.
+              Paritium is developed by Greenvine Technologies and EccentricLLC,
+              combining product strategy, fintech expertise, and engineering to
+              make exchange-rate comparison clearer and more trustworthy.
             </p>
             <div className="mission-illustration mission-team" aria-hidden="true">
               <span />
@@ -138,7 +138,12 @@ export default function AboutPage() {
           <TrackedLink
             className="button button-invert"
             eventName="paritium_survey_clicked"
-            eventParameters={{ page_origin: "about_contact_cta" }}
+            eventParameters={{
+              click_type: "survey",
+              cta_name: "take_the_survey",
+              page_origin: "about_contact_cta",
+              survey_type: "general"
+            }}
             href="/survey"
           >
             Take the survey

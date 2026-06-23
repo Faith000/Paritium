@@ -105,6 +105,8 @@ export default function HeroRateSelector({
             setToCurrency(nextToCurrency);
             persistSelectedPair(nextPair);
             trackAnalyticsEvent("currency_pair_selected", {
+              click_type: "currency_pair_selection",
+              cta_name: "see_todays_rates",
               currency_pair: nextPair,
               from_currency: nextFromCurrency,
               to_currency: nextToCurrency
