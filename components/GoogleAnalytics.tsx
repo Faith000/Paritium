@@ -2,11 +2,31 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ANALYTICS_CONSENT_STORAGE_KEY } from "@/lib/analytics";
+import {
+  ANALYTICS_CONSENT_STORAGE_KEY,
+  ANALYTICS_PREFERENCES_EVENT
+} from "@/lib/analytics";
 
 type AnalyticsConsent = "accepted" | "rejected";
 
 const GOOGLE_ANALYTICS_SCRIPT_ID = "paritium-google-analytics";
+
+function initializeGoogleTagQueue() {
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function gtag() {
+    window.dataLayer.push(arguments);
+  };
+}
+
+function updateGoogleConsent(consent: AnalyticsConsent) {
+  initializeGoogleTagQueue();
+  window.gtag?.("consent", "update", {
+    ad_personalization: "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    analytics_storage: consent === "accepted" ? "granted" : "denied"
+  });
+}
 
 export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   const pathname = usePathname();
@@ -17,11 +37,26 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   const lastTrackedPath = useRef<string | null>(null);
 
   useEffect(() => {
-    const storedConsent = window.localStorage.getItem(
-      ANALYTICS_CONSENT_STORAGE_KEY
-    );
+    initializeGoogleTagQueue();
+    window.gtag?.("consent", "default", {
+      ad_personalization: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      analytics_storage: "denied",
+      wait_for_update: 500
+    });
+
+    let storedConsent: string | null = null;
+
+    try {
+      storedConsent = window.localStorage.getItem(ANALYTICS_CONSENT_STORAGE_KEY);
+    } catch {
+      setShowPreferences(true);
+      return;
+    }
 
     if (storedConsent === "accepted" || storedConsent === "rejected") {
+      updateGoogleConsent(storedConsent);
       setConsent(storedConsent);
       return;
     }
@@ -30,33 +65,54 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
   }, []);
 
   useEffect(() => {
+    function openPreferences() {
+      setShowPreferences(true);
+    }
+
+    window.addEventListener(ANALYTICS_PREFERENCES_EVENT, openPreferences);
+    return () => window.removeEventListener(ANALYTICS_PREFERENCES_EVENT, openPreferences);
+  }, []);
+
+  useEffect(() => {
     if (consent !== "accepted" || !measurementId) {
       return;
     }
 
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function gtag() {
-      window.dataLayer.push(arguments);
-    };
+    initializeGoogleTagQueue();
+    const activeMeasurementId = measurementId;
 
     const existingScript = document.getElementById(GOOGLE_ANALYTICS_SCRIPT_ID) as HTMLScriptElement | null;
+
+    function configureMeasurement() {
+      if (configuredMeasurementId.current !== activeMeasurementId) {
+        window.gtag?.("config", activeMeasurementId, { send_page_view: false });
+        configuredMeasurementId.current = activeMeasurementId;
+      }
+    }
 
     function markAnalyticsReady() {
       const script = document.getElementById(GOOGLE_ANALYTICS_SCRIPT_ID) as HTMLScriptElement | null;
       if (script) {
         script.dataset.loaded = "true";
       }
+      window.paritiumAnalyticsReady = true;
+      window.paritiumAnalyticsQueue?.forEach(({ eventName, parameters }) => {
+        window.gtag?.("event", eventName, parameters);
+      });
+      window.paritiumAnalyticsQueue = [];
       setAnalyticsReady(true);
     }
 
     if (existingScript) {
+      configureMeasurement();
       if (existingScript.dataset.loaded === "true") {
-        setAnalyticsReady(true);
+        markAnalyticsReady();
       } else {
         existingScript.addEventListener("load", markAnalyticsReady, { once: true });
       }
     } else {
-      window.gtag("js", new Date());
+      window.gtag?.("js", new Date());
+      configureMeasurement();
 
       const script = document.createElement("script");
       script.async = true;
@@ -82,11 +138,6 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
       return;
     }
 
-    if (configuredMeasurementId.current !== measurementId) {
-      window.gtag("config", measurementId, { send_page_view: false });
-      configuredMeasurementId.current = measurementId;
-    }
-
     window.gtag("event", "page_view", {
       page_location: window.location.href,
       page_path: pathname,
@@ -100,6 +151,7 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
     const analyticsWasLoaded = consent === "accepted";
 
     window.localStorage.setItem(ANALYTICS_CONSENT_STORAGE_KEY, nextConsent);
+    updateGoogleConsent(nextConsent);
     setConsent(nextConsent);
     setShowPreferences(false);
 

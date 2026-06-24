@@ -3084,6 +3084,21 @@ tbody tr:has(.row-detail-toggle:checked) + .provider-detail-row {
   padding: 64px max(20px, calc((100vw - var(--max-width)) / 2)) 34px;
 }
 
+.footer-link-button {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.footer-link-button:hover,
+.footer-link-button:focus-visible {
+  text-decoration: underline;
+}
+
 .provider-surveys + .site-footer {
   margin-top: 0;
 }
@@ -3119,6 +3134,12 @@ tbody tr:has(.row-detail-toggle:checked) + .provider-detail-row {
 }
 
 .footer-grid a:not(.logo) {
+  color: rgba(255, 255, 255, 0.72);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.footer-grid .footer-link-button {
   color: rgba(255, 255, 255, 0.72);
   display: block;
   margin-bottom: 12px;

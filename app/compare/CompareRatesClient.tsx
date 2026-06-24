@@ -369,7 +369,7 @@ export default function CompareRatesClient({
                                 provider_name: rate.provider,
                                 provider_rank: index + 1,
                                 store_type: "app_store",
-                                time_before_click: getSecondsBeforeClick(compareStartedAt.current)
+                                time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
                               })
                             }
                           >
@@ -388,7 +388,7 @@ export default function CompareRatesClient({
                                 provider_name: rate.provider,
                                 provider_rank: index + 1,
                                 store_type: "google_play",
-                                time_before_click: getSecondsBeforeClick(compareStartedAt.current)
+                                time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
                               })
                             }
                           >
@@ -409,7 +409,7 @@ export default function CompareRatesClient({
                               currency_pair: selectedPair,
                               provider_name: rate.provider,
                               provider_rank: index + 1,
-                              time_before_click: getSecondsBeforeClick(compareStartedAt.current)
+                              time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
                             })
                           }
                         >
@@ -501,7 +501,7 @@ export default function CompareRatesClient({
                       currency_pair: selectedPair,
                       provider_name: rate.provider,
                       provider_rank: index + 1,
-                      time_before_click: getSecondsBeforeClick(compareStartedAt.current)
+                      time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
                     })
                   }
                 >
@@ -520,7 +520,7 @@ export default function CompareRatesClient({
                         provider_name: rate.provider,
                         provider_rank: index + 1,
                         store_type: "app_store",
-                        time_before_click: getSecondsBeforeClick(compareStartedAt.current)
+                        time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
                       })
                     }
                   >
@@ -539,7 +539,7 @@ export default function CompareRatesClient({
                         provider_name: rate.provider,
                         provider_rank: index + 1,
                         store_type: "google_play",
-                        time_before_click: getSecondsBeforeClick(compareStartedAt.current)
+                        time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
                       })
                     }
                   >

@@ -1,4 +1,5 @@
 import TrackedLink from "@/components/TrackedLink";
+import CookiePreferencesButton from "@/components/CookiePreferencesButton";
 
 export default function SiteFooter() {
   return (
@@ -35,6 +36,7 @@ export default function SiteFooter() {
           <a href="/privacy">Privacy Policy</a>
           <a href="/terms">Terms of Use</a>
           <a href="/privacy#cookies">Cookie notice</a>
+          <CookiePreferencesButton />
         </div>
         <div>
           <h2>Connect</h2>

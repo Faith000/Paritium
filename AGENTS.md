@@ -114,6 +114,7 @@ Implemented pages:
 - `/how-it-works`
 - `/about`
 - `/survey`
+- `/survey/complete` (non-indexed SurveyPlanet completion redirect)
 - `/privacy`
 - `/terms`
 - `/api/rates?pair=GBP_NGN`
@@ -277,6 +278,7 @@ The PRD requires:
 - Cookie consent before analytics activation.
 - Google Analytics is integrated globally through `components/GoogleAnalytics.tsx` and configured with `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
 - Do not load `gtag.js` until the visitor accepts analytics cookies. Preserve the persistent accept/reject controls and consent withdrawal path.
+- Send Google Consent Mode defaults before the analytics script loads. Keep analytics and advertising storage denied until the visitor explicitly accepts analytics; advertising consent remains denied.
 - A stakeholder-accessible GA4 or Looker Studio dashboard.
 
 Events that should be tracked once analytics is implemented:
@@ -295,18 +297,21 @@ Events that should be tracked once analytics is implemented:
 
 Do not add analytics that fires before consent.
 
-Current implementation: `components/GoogleAnalytics.tsx` stores the visitor's analytics choice in local storage, initializes the Google command queue after consent, loads `gtag.js`, and sends an explicit GA4 `page_view` only after the library reports that it is ready. It tracks subsequent App Router pathname changes. The measurement ID is supplied through `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
+Current implementation: `components/GoogleAnalytics.tsx` stores the visitor's analytics choice in local storage, queues denied Consent Mode defaults, loads `gtag.js` only after analytics consent, and sends an explicit GA4 `page_view` only after the library reports that it is ready. It tracks subsequent App Router pathname changes. The footer provides a persistent preference-control path. The measurement ID is supplied through `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
 
 Custom events are sent through the consent-aware `trackAnalyticsEvent` helper in `lib/analytics.ts`:
 
 - `currency_pair_selected`: `from_currency`, `to_currency`, `currency_pair`, `cta_name`.
 - `provider_row_expanded`: `provider_name`, `provider_rank`, `currency_pair`, `cta_name`.
-- `provider_visit_clicked`: `provider_name`, `provider_rank`, `currency_pair`, `cta_name`, `time_before_click` where the Compare Rates timer is available.
-- `provider_app_download_clicked`: `provider_name`, `provider_rank`, `platform`, `store_type`, `currency_pair`, `cta_name`, `time_before_click`.
+- `provider_visit_clicked`: `provider_name`, `provider_rank`, `currency_pair`, `cta_name`, `time_before_provider_click_seconds` where the Compare Rates timer is available.
+- `provider_app_download_clicked`: `provider_name`, `provider_rank`, `platform`, `store_type`, `currency_pair`, `cta_name`, `time_before_provider_click_seconds`.
 - `paritium_survey_clicked`: `page_origin`, `cta_name`.
+- `paritium_survey_completed`: `page_origin`; fired only from `/survey/complete` after the external survey redirects back.
 - `provider_survey_clicked`: `provider_name`, `provider_rank` where available, `cta_name`.
 - `notify_me_submitted`: `source_section`, `cta_name`; never send the entered email address to analytics.
 - `paritium_app_cta_clicked`: `platform`, `cta_name`; use `web` for the current generic coming-soon CTA.
+
+GA4 registers `time_before_provider_click_seconds` as an event-scoped custom metric measured in seconds. The older `time_before_click` custom dimension is retained only for historical compatibility and is no longer emitted by the application.
 
 ## Security Requirements
 
