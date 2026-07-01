@@ -50,14 +50,22 @@ export type ProviderMetadata = {
 export type ProviderRate = ProviderMetadata & {
   rate: number;
   rateLabel: string;
+  transferFee: TransferFee;
+  transferFeeLabel: string;
   updatedAt: string;
   stale: boolean;
   source: "live" | "mock" | "fallback";
 };
 
+export type TransferFee = {
+  amount: number;
+  currency: CurrencyCode;
+};
+
 export type ProviderRateQuote = {
   providerId: ProviderId;
   rate: number;
+  transferFee: TransferFee;
   updatedAt: string;
   source: ProviderRate["source"];
 };

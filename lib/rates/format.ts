@@ -1,5 +1,5 @@
 import { getCurrencyPair } from "./pairs";
-import type { CurrencyPair, ProviderRateQuote } from "./types";
+import type { CurrencyPair, ProviderRateQuote, TransferFee } from "./types";
 
 export function formatRateLabel(pair: CurrencyPair, rate: number) {
   const currencyPair = getCurrencyPair(pair);
@@ -20,6 +20,15 @@ export function isStale(updatedAt: string) {
   }
 
   return Date.now() - updatedAtTime > 2 * 60 * 60 * 1000;
+}
+
+export function formatTransferFee(fee: TransferFee) {
+  return new Intl.NumberFormat("en", {
+    currency: fee.currency,
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+    style: "currency"
+  }).format(fee.amount);
 }
 
 export function minutesAgo(minutes: number) {

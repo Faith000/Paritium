@@ -124,10 +124,12 @@ export default function TermsPage() {
             <h3>How providers are ranked</h3>
             <p>
               For a selected currency pair, Paritium ranks providers from the
-              highest displayed published rate to the lowest. The ranking does
-              not currently calculate the total amount received, fees, transfer
-              speed, limits, service quality, or individual eligibility. A
-              &quot;Best Rate Today&quot; label means the highest displayed rate in
+              highest displayed published rate to the lowest. Where a send
+              amount and transfer fee are shown, the recipient-receives value is
+              an estimate based on the displayed rate and fee. The ranking does
+              not account for transfer speed, limits, service quality,
+              promotions, payment-method adjustments, or individual eligibility.
+              A &quot;Best Rate Today&quot; label means the highest displayed rate in
               the current comparison, not a guarantee of the best available
               transaction for every user.
             </p>

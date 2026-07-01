@@ -1,4 +1,9 @@
-import { formatRateLabel, isStale, sortQuotesByRate } from "./format";
+import {
+  formatRateLabel,
+  formatTransferFee,
+  isStale,
+  sortQuotesByRate
+} from "./format";
 import { providerMetadata } from "./provider-metadata";
 import type { CurrencyPair, ProviderRate, ProviderRateQuote } from "./types";
 
@@ -13,6 +18,8 @@ export function composeProviderRates(
       ...metadata,
       rate: quote.rate,
       rateLabel: formatRateLabel(pair, quote.rate),
+      transferFee: quote.transferFee,
+      transferFeeLabel: formatTransferFee(quote.transferFee),
       updatedAt: quote.updatedAt,
       stale: isStale(quote.updatedAt),
       source: quote.source

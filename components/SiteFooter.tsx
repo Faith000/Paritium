@@ -40,15 +40,9 @@ export default function SiteFooter() {
         </div>
         <div>
           <h2>Connect</h2>
-          <a href="https://x.com" target="_blank" rel="noreferrer">
-            Twitter/X
-          </a>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer">
-            LinkedIn
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noreferrer">
-            Instagram
-          </a>
+          <a href="https://x.com">Twitter/X</a>
+          <a href="https://linkedin.com">LinkedIn</a>
+          <a href="https://instagram.com">Instagram</a>
         </div>
       </div>
       <div className="footer-bottom">

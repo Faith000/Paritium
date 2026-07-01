@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type {
   CurrencyPair,
@@ -52,6 +52,29 @@ function getPairCookie() {
   );
 }
 
+function getStoredAmount() {
+  try {
+    return window.localStorage.getItem("paritium:sendAmount");
+  } catch {
+    return null;
+  }
+}
+
+function getAmountCookie() {
+  return (
+    document.cookie
+      .split("; ")
+      .find((cookie) => cookie.startsWith("paritium_send_amount="))
+      ?.split("=")[1] ?? null
+  );
+}
+
+function getValidAmount(amountValue: string | null) {
+  const amount = Number(amountValue);
+
+  return Number.isFinite(amount) && amount > 0 ? amount : null;
+}
+
 function getWindowNamePair() {
   return window.name.match(/paritium_selected_pair=([A-Z_]+)/)?.[1] ?? null;
 }
@@ -67,6 +90,16 @@ function persistSelectedPair(pair: CurrencyPair) {
   document.cookie = `paritium_selected_pair=${pair}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
+function persistSendAmount(amount: number) {
+  try {
+    window.localStorage.setItem("paritium:sendAmount", amount.toString());
+  } catch {
+    // Browsers can block localStorage in private or embedded contexts.
+  }
+
+  document.cookie = `paritium_send_amount=${amount}; path=/; max-age=2592000; SameSite=Lax`;
+}
+
 export default function CompareRatesClient({
   pairs,
   ratesByPair
@@ -78,9 +111,13 @@ export default function CompareRatesClient({
   const [selectedPair, setSelectedPair] = useState<CurrencyPair>("GBP_NGN");
   const [draftFromCurrency, setDraftFromCurrency] = useState("GBP");
   const [draftToCurrency, setDraftToCurrency] = useState("NGN");
+  const [sendAmount, setSendAmount] = useState(1000);
+  const [draftSendAmount, setDraftSendAmount] = useState("1000");
   const [liveRatesByPair, setLiveRatesByPair] = useState(ratesByPair);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<"from" | "to" | null>(null);
   const compareStartedAt = useRef(Date.now());
+  const selectorsRef = useRef<HTMLDivElement>(null);
 
   const rates = liveRatesByPair[selectedPair] ?? ratesByPair[selectedPair];
   const averageRate = useMemo(
@@ -100,10 +137,30 @@ export default function CompareRatesClient({
   const draftPair = getPairValue(pairs, draftFromCurrency, draftToCurrency);
 
   useEffect(() => {
+    function closeDropdown(event: MouseEvent) {
+      if (!selectorsRef.current?.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    }
+
+    document.addEventListener("mousedown", closeDropdown);
+
+    return () => document.removeEventListener("mousedown", closeDropdown);
+  }, []);
+
+  useEffect(() => {
     const pairFromUrl = searchParams.get("pair");
+    const amountFromUrl = searchParams.get("amount");
     const storedPair = getStoredPair() ?? getPairCookie() ?? getWindowNamePair();
+    const storedAmount = getStoredAmount() ?? getAmountCookie();
     const nextPair =
       getValidPair(pairFromUrl, pairs) ?? getValidPair(storedPair, pairs);
+    const nextAmount = getValidAmount(amountFromUrl) ?? getValidAmount(storedAmount);
+
+    if (nextAmount) {
+      setSendAmount(nextAmount);
+      setDraftSendAmount(nextAmount.toString());
+    }
 
     if (!nextPair) return;
 
@@ -126,7 +183,7 @@ export default function CompareRatesClient({
 
     setIsRefreshing(true);
 
-    fetchPairRates(selectedPair)
+    fetchPairRates(selectedPair, sendAmount)
       .then((providerRates) => {
         if (!isCurrent) return;
 
@@ -147,7 +204,7 @@ export default function CompareRatesClient({
     return () => {
       isCurrent = false;
     };
-  }, [selectedPair]);
+  }, [selectedPair, sendAmount]);
 
   return (
     <section className="compare-workspace section-pad" aria-labelledby="rates-title">
@@ -158,104 +215,87 @@ export default function CompareRatesClient({
             {fromCurrency} to {toCurrency}
           </h2>
         </div>
-        <div className="compare-currency-selectors" aria-label="Currency pair selectors">
-          <label>
-            From
-            <span className="currency-select-field">
-              <CurrencyFlag
-                flag={getCurrencyFlag(draftFromCurrency)}
-                label={draftFromCurrency}
-              />
-              <select
-                aria-label="From currency"
-                value={draftFromCurrency}
-                onChange={(event) => {
-                  const nextFromCurrency = event.target.value;
-                  const nextPair = getPairValue(pairs, nextFromCurrency, draftToCurrency);
+        <div
+          className="compare-currency-selectors"
+          aria-label="Currency pair selectors"
+          ref={selectorsRef}
+        >
+          <div className="compare-select-control">
+            <span>From</span>
+            <CurrencyDropdown
+              currencies={fromCurrencyOptions}
+              id="compare-from-currency"
+              isOpen={openDropdown === "from"}
+              label="From currency"
+              onOpenChange={(isOpen) => setOpenDropdown(isOpen ? "from" : null)}
+              onSelect={(currency) => {
+                const nextPair = getPairValue(pairs, currency, draftToCurrency);
 
-                  setDraftFromCurrency(nextFromCurrency);
+                setDraftFromCurrency(currency);
+                setOpenDropdown(null);
 
-                  if (!nextPair) {
-                    const fallbackToCurrency = pairs
-                      .find((pair) => pair.label.startsWith(`${nextFromCurrency} → `))
-                      ?.label.split(" → ")[1];
+                if (!nextPair) {
+                  const fallbackToCurrency = pairs
+                    .find((pair) => pair.label.startsWith(`${currency} → `))
+                    ?.label.split(" → ")[1];
 
-                    if (fallbackToCurrency) {
-                      setDraftToCurrency(fallbackToCurrency);
-                    }
+                  if (fallbackToCurrency) {
+                    setDraftToCurrency(fallbackToCurrency);
                   }
-                }}
-              >
-                {fromCurrencyOptions.map((currency) => (
-                  <option key={currency} value={currency}>
-                    {currency}
-                  </option>
-                ))}
-              </select>
-            </span>
-          </label>
-          <button
-            aria-label="Swap currencies"
-            className="swap-currency-button compare-swap-button"
-            type="button"
-            onClick={() => {
-              const currentIndex = fromCurrencyOptions.indexOf(draftFromCurrency);
-              const nextFromCurrency =
-                fromCurrencyOptions[(currentIndex + 1) % fromCurrencyOptions.length] ??
-                draftFromCurrency;
-
-              setDraftFromCurrency(nextFromCurrency);
-              setDraftToCurrency(toCurrencyOptions[0] ?? "NGN");
-            }}
-          >
-            <SwapIcon />
-          </button>
+                }
+              }}
+              value={draftFromCurrency}
+            />
+          </div>
+          <div className="compare-select-control">
+            <span>To</span>
+            <CurrencyDropdown
+              currencies={toCurrencyOptions}
+              id="compare-to-currency"
+              isOpen={openDropdown === "to"}
+              label="To currency"
+              onOpenChange={(isOpen) => setOpenDropdown(isOpen ? "to" : null)}
+              onSelect={(currency) => {
+                setDraftToCurrency(currency);
+                setOpenDropdown(null);
+              }}
+              value={draftToCurrency}
+            />
+          </div>
           <label>
-            To
-            <span className="currency-select-field">
-              <CurrencyFlag
-                flag={getCurrencyFlag(draftToCurrency)}
-                label={draftToCurrency}
+            Amount to send
+            <span className="compare-amount-field">
+              <input
+                aria-label={`Amount to send in ${draftFromCurrency}`}
+                inputMode="decimal"
+                min="0"
+                onChange={(event) => setDraftSendAmount(event.target.value)}
+                type="number"
+                value={draftSendAmount}
               />
-              <select
-                aria-label="To currency"
-                value={draftToCurrency}
-                onChange={(event) => {
-                  setDraftToCurrency(event.target.value);
-                }}
-              >
-                {toCurrencyOptions.map((currency) => (
-                  <option key={currency} value={currency}>
-                    {currency}
-                  </option>
-                ))}
-              </select>
+              <span>{draftFromCurrency}</span>
             </span>
           </label>
           <button
             className="button button-primary compare-refresh-button"
             disabled={!draftPair || isRefreshing}
             type="button"
-            onClick={async (event) => {
-              const controls = event.currentTarget.closest(
-                ".compare-currency-selectors"
-              );
-              const nextFromCurrency =
-                controls?.querySelector<HTMLSelectElement>(
-                  'select[aria-label="From currency"]'
-                )?.value ?? draftFromCurrency;
-              const nextToCurrency =
-                controls?.querySelector<HTMLSelectElement>(
-                  'select[aria-label="To currency"]'
-                )?.value ?? draftToCurrency;
+            onClick={async () => {
+              const nextFromCurrency = draftFromCurrency;
+              const nextToCurrency = draftToCurrency;
               const nextPair = getPairValue(pairs, nextFromCurrency, nextToCurrency);
 
               if (!nextPair) return;
 
+              const nextAmount = getValidAmount(draftSendAmount) ?? 1000;
+
               setDraftFromCurrency(nextFromCurrency);
               setDraftToCurrency(nextToCurrency);
+              setDraftSendAmount(nextAmount.toString());
               setSelectedPair(nextPair);
+              setSendAmount(nextAmount);
               persistSelectedPair(nextPair);
+              persistSendAmount(nextAmount);
               trackAnalyticsEvent("currency_pair_selected", {
                 cta_name: "see_todays_rates",
                 currency_pair: nextPair,
@@ -265,7 +305,7 @@ export default function CompareRatesClient({
               setIsRefreshing(true);
 
               try {
-                const providerRates = await fetchPairRates(nextPair);
+                const providerRates = await fetchPairRates(nextPair, nextAmount);
 
                 setLiveRatesByPair((currentRates) => ({
                   ...currentRates,
@@ -303,147 +343,126 @@ export default function CompareRatesClient({
             </caption>
             <thead>
               <tr>
+                <th scope="col">Rank</th>
                 <th scope="col">Provider</th>
                 <th scope="col">Published rate</th>
+                <th scope="col">Transfer fee</th>
+                <th scope="col">Recepient Receives</th>
                 <th scope="col">Last updated</th>
-                <th scope="col">Apps</th>
-                <th scope="col">Continue</th>
-                <th scope="col">Details</th>
+                <th scope="col">Download</th>
+                <th scope="col">Website</th>
               </tr>
             </thead>
             <tbody>
               {rates.map((rate, index) => {
                 const rateDifference = rate.rate - averageRate;
-                const detailsId = `provider-details-${rate.provider
-                  .toLowerCase()
-                  .replaceAll(" ", "-")}`;
+                const recipientReceives = calculateRecipientReceives(
+                  sendAmount,
+                  rate
+                );
 
                 return (
-                  <Fragment key={rate.provider}>
-                    <tr>
-                      <td>
-                        <div className="ranked-provider">
-                          <span className="rank-pill">#{index + 1}</span>
-                          <div className="provider-cell">
-                            <ProviderLogo
-                              logo={rate.logo}
-                              provider={rate.provider}
-                              shortName={rate.shortName}
-                            />
-                            <div>
-                              <strong>{rate.provider}</strong>
-                              {index === 0 ? <em>Best Rate Today</em> : null}
-                            </div>
-                          </div>
+                  <tr key={rate.provider}>
+                    <td>
+                      <span className="rank-pill">#{index + 1}</span>
+                    </td>
+                    <td>
+                      <div className="provider-cell">
+                        <ProviderLogo
+                          logo={rate.logo}
+                          provider={rate.provider}
+                          shortName={rate.shortName}
+                        />
+                        <div>
+                          <strong>{rate.provider}</strong>
+                          {index === 0 ? <em>Best Rate Today</em> : null}
                         </div>
-                      </td>
-                      <td>
-                        <div className="rate-value">
-                          <strong>{rate.rateLabel}</strong>
-                          <span>
-                            <b className={rateDifference >= 0 ? "rate-positive" : "rate-negative"}>
-                              {rateDifference >= 0 ? "+" : ""}
-                              {rateDifference.toFixed(2)}
-                            </b>{" "}
-                            vs average
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <div className={rate.stale ? "updated-cell updated-cell-stale" : "updated-cell"}>
-                          <span>{timeAgo(rate.updatedAt)}</span>
-                          {rate.stale ? <small>Older than 2 hours</small> : null}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="app-links">
-                          <a
-                            href={rate.appStoreUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() =>
-                              trackAnalyticsEvent("provider_app_download_clicked", {
-                                cta_name: "app_store",
-                                currency_pair: selectedPair,
-                                platform: "ios",
-                                provider_name: rate.provider,
-                                provider_rank: index + 1,
-                                store_type: "app_store",
-                                time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
-                              })
-                            }
-                          >
-                            <AppStoreIcon />
-                            <span className="sr-only">App Store</span>
-                          </a>
-                          <a
-                            href={rate.playStoreUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() =>
-                              trackAnalyticsEvent("provider_app_download_clicked", {
-                                cta_name: "google_play",
-                                currency_pair: selectedPair,
-                                platform: "android",
-                                provider_name: rate.provider,
-                                provider_rank: index + 1,
-                                store_type: "google_play",
-                                time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
-                              })
-                            }
-                          >
-                            <GooglePlayIcon />
-                            <span className="sr-only">Google Play</span>
-                          </a>
-                        </div>
-                      </td>
-                      <td>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="rate-value">
+                        <strong>{rate.rateLabel}</strong>
+                        <span>
+                          <b className={rateDifference >= 0 ? "rate-positive" : "rate-negative"}>
+                            {rateDifference >= 0 ? "+" : ""}
+                            {rateDifference.toFixed(2)}
+                          </b>{" "}
+                          vs average
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <strong className="transfer-fee-value">
+                        {rate.transferFeeLabel}
+                      </strong>
+                    </td>
+                    <td>
+                      <strong className="recipient-receives-value">
+                        {formatRecipientAmount(recipientReceives, toCurrency)}
+                      </strong>
+                    </td>
+                    <td>
+                      <div className={rate.stale ? "updated-cell updated-cell-stale" : "updated-cell"}>
+                        <span>{timeAgo(rate.updatedAt)}</span>
+                        {rate.stale ? <small>Older than 2 hours</small> : null}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="app-links">
                         <a
-                          className="table-action"
-                          href={rate.websiteUrl}
-                          target="_blank"
-                          rel="noreferrer"
+                          href={rate.appStoreUrl}
                           onClick={() =>
-                            trackAnalyticsEvent("provider_visit_clicked", {
-                              cta_name: "visit_website",
+                            trackAnalyticsEvent("provider_app_download_clicked", {
+                              cta_name: "app_store",
                               currency_pair: selectedPair,
+                              platform: "ios",
                               provider_name: rate.provider,
                               provider_rank: index + 1,
+                              store_type: "app_store",
                               time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
                             })
                           }
                         >
-                          Visit Website
+                          <AppStoreIcon />
+                          <span className="sr-only">App Store</span>
                         </a>
-                      </td>
-                      <td>
-                        <input
-                          className="row-detail-toggle"
-                          id={detailsId}
-                          type="checkbox"
-                          onChange={(event) => {
-                            if (event.target.checked) {
-                              trackAnalyticsEvent("provider_row_expanded", {
-                                cta_name: "view_details",
-                                currency_pair: selectedPair,
-                                provider_name: rate.provider,
-                                provider_rank: index + 1
-                              });
-                            }
-                          }}
-                        />
-                        <label className="text-button row-detail-label" htmlFor={detailsId}>
-                          <span className="details-label-closed">View</span>
-                          <span className="details-label-open">Hide</span>
-                        </label>
-                      </td>
-                    </tr>
-                    <tr className="provider-detail-row">
-                      <td colSpan={6}>
-                        <ProviderDetails providerRank={index + 1} rate={rate} />
-                      </td>
-                    </tr>
-                  </Fragment>
+                        <a
+                          href={rate.playStoreUrl}
+                          onClick={() =>
+                            trackAnalyticsEvent("provider_app_download_clicked", {
+                              cta_name: "google_play",
+                              currency_pair: selectedPair,
+                              platform: "android",
+                              provider_name: rate.provider,
+                              provider_rank: index + 1,
+                              store_type: "google_play",
+                              time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
+                            })
+                          }
+                        >
+                          <GooglePlayIcon />
+                          <span className="sr-only">Google Play</span>
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      <a
+                        className="table-action"
+                        href={rate.websiteUrl}
+                        onClick={() =>
+                          trackAnalyticsEvent("provider_visit_clicked", {
+                            cta_name: "visit_website",
+                            currency_pair: selectedPair,
+                            provider_name: rate.provider,
+                            provider_rank: index + 1,
+                            time_before_provider_click_seconds: getSecondsBeforeClick(compareStartedAt.current)
+                          })
+                        }
+                      >
+                        Visit Website
+                      </a>
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>
@@ -485,6 +504,19 @@ export default function CompareRatesClient({
                   vs provider average
                 </p>
               </div>
+              <div className="mobile-rate-meta">
+                <span>Transfer fee</span>
+                <strong>{rate.transferFeeLabel}</strong>
+              </div>
+              <div className="mobile-rate-meta mobile-recipient-meta">
+                <span>Recepient receives</span>
+                <strong>
+                  {formatRecipientAmount(
+                    calculateRecipientReceives(sendAmount, rate),
+                    toCurrency
+                  )}
+                </strong>
+              </div>
               <div className={rate.stale ? "mobile-rate-meta mobile-rate-meta-stale" : "mobile-rate-meta"}>
                 <span>Updated {timeAgo(rate.updatedAt)}</span>
                 <span>{rate.supportedCurrencies.join(", ")}</span>
@@ -493,8 +525,6 @@ export default function CompareRatesClient({
                 <a
                   className="mobile-primary-action"
                   href={rate.websiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
                   onClick={() =>
                     trackAnalyticsEvent("provider_visit_clicked", {
                       cta_name: "visit_website",
@@ -510,8 +540,6 @@ export default function CompareRatesClient({
                 <span className="app-links">
                   <a
                     href={rate.appStoreUrl}
-                    target="_blank"
-                    rel="noreferrer"
                     onClick={() =>
                       trackAnalyticsEvent("provider_app_download_clicked", {
                         cta_name: "app_store",
@@ -529,8 +557,6 @@ export default function CompareRatesClient({
                   </a>
                   <a
                     href={rate.playStoreUrl}
-                    target="_blank"
-                    rel="noreferrer"
                     onClick={() =>
                       trackAnalyticsEvent("provider_app_download_clicked", {
                         cta_name: "google_play",
@@ -548,27 +574,6 @@ export default function CompareRatesClient({
                   </a>
                 </span>
               </div>
-              <details
-                className="mobile-details-toggle"
-                onToggle={(event) => {
-                  if (event.currentTarget.open) {
-                    trackAnalyticsEvent("provider_row_expanded", {
-                      cta_name: "view_details",
-                      currency_pair: selectedPair,
-                      provider_name: rate.provider,
-                      provider_rank: index + 1
-                    });
-                  }
-                }}
-              >
-                <summary>
-                  <span className="details-label-closed">View details</span>
-                  <span className="details-label-open">Hide details</span>
-                </summary>
-                <div className="mobile-provider-details">
-                  <ProviderDetails providerRank={index + 1} rate={rate} />
-                </div>
-              </details>
             </article>
           );
         })}
@@ -577,8 +582,14 @@ export default function CompareRatesClient({
   );
 }
 
-async function fetchPairRates(pair: CurrencyPair) {
-  const response = await fetch(`/api/rates?pair=${pair}`, {
+async function fetchPairRates(pair: CurrencyPair, amount?: number) {
+  const searchParams = new URLSearchParams({ pair });
+
+  if (amount && Number.isFinite(amount) && amount > 0) {
+    searchParams.set("amount", amount.toString());
+  }
+
+  const response = await fetch(`/api/rates?${searchParams.toString()}`, {
     cache: "no-store"
   });
 
@@ -591,50 +602,21 @@ async function fetchPairRates(pair: CurrencyPair) {
   return data.providers;
 }
 
-function ProviderDetails({
-  providerRank,
-  rate
-}: {
-  providerRank: number;
-  rate: ProviderRate;
-}) {
-  return (
-    <div className="provider-details">
-      <div>
-        <h3>{rate.provider} provider information</h3>
-        <p>
-          {rate.provider} is listed here as a transfer provider for comparison.
-          Complete any transfer directly on the provider&apos;s own secure
-          platform.
-        </p>
-      </div>
-      <div>
-        <h4>Supported currencies</h4>
-        <p>{rate.supportedCurrencies.join(", ")}</p>
-      </div>
-      <div>
-        <h4>Transfer methods</h4>
-        <p>{rate.transferMethods.join(", ")}</p>
-        <a
-          className="text-button"
-          href={rate.surveyUrl}
-          onClick={() =>
-            trackAnalyticsEvent("provider_survey_clicked", {
-              cta_name: "provider_feedback",
-              provider_name: rate.provider,
-              provider_rank: providerRank
-            })
-          }
-        >
-          Share provider feedback
-        </a>
-      </div>
-    </div>
-  );
-}
-
 function getSecondsBeforeClick(startedAt: number) {
   return Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+}
+
+function calculateRecipientReceives(sendAmount: number, rate: ProviderRate) {
+  return Math.max(sendAmount - rate.transferFee.amount, 0) * rate.rate;
+}
+
+function formatRecipientAmount(amount: number, currency?: string) {
+  return new Intl.NumberFormat("en", {
+    currency: currency ?? "NGN",
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+    style: "currency"
+  }).format(amount);
 }
 
 function ProviderLogo({
@@ -673,6 +655,70 @@ function ProviderLogo({
   );
 }
 
+function CurrencyDropdown({
+  currencies,
+  id,
+  isOpen,
+  label,
+  onOpenChange,
+  onSelect,
+  value
+}: {
+  currencies: string[];
+  id: string;
+  isOpen: boolean;
+  label: string;
+  onOpenChange: (isOpen: boolean) => void;
+  onSelect: (currency: string) => void;
+  value: string;
+}) {
+  return (
+    <div className="hero-currency-dropdown compare-currency-dropdown">
+      <button
+        aria-controls={`${id}-menu`}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-label={label}
+        className="hero-dropdown-button compare-dropdown-button"
+        id={id}
+        onClick={() => onOpenChange(!isOpen)}
+        type="button"
+      >
+        <span>
+          <CurrencyFlag flag={getCurrencyFlag(value)} label={value} />
+          <strong>{value}</strong>
+        </span>
+        <ChevronDownIcon />
+      </button>
+      {isOpen ? (
+        <div
+          aria-labelledby={id}
+          className="hero-dropdown-menu compare-dropdown-menu"
+          id={`${id}-menu`}
+          role="listbox"
+        >
+          {currencies.map((currency) => (
+            <button
+              aria-selected={currency === value}
+              className="hero-dropdown-option"
+              key={currency}
+              onClick={() => onSelect(currency)}
+              role="option"
+              type="button"
+            >
+              <CurrencyFlag flag={getCurrencyFlag(currency)} label={currency} />
+              <span>
+                <strong>{currency}</strong>
+                <small>{getCurrencyName(currency)}</small>
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function CurrencyFlag({ flag, label }: { flag: string; label: string }) {
   return (
     <span className="currency-mark" aria-hidden="true" title={`${label} flag`}>
@@ -693,18 +739,30 @@ function getCurrencyFlag(code: string) {
   return flags[code] ?? "";
 }
 
-function SwapIcon() {
+function getCurrencyName(code: string) {
+  const names: Record<string, string> = {
+    CAD: "Canadian Dollar",
+    EUR: "Euro",
+    GBP: "British Pound",
+    NGN: "Nigerian Naira",
+    USD: "US Dollars"
+  };
+
+  return names[code] ?? code;
+}
+
+function ChevronDownIcon() {
   return (
     <svg
       aria-hidden="true"
       fill="none"
-      height="20"
+      height="18"
       viewBox="0 0 24 24"
-      width="20"
+      width="18"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M7 7h11l-3-3M17 17H6l3 3"
+        d="m6 9 6 6 6-6"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"

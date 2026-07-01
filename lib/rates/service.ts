@@ -4,7 +4,10 @@ import { getMockQuoteForProvider, getMockQuotes } from "./connectors/mock";
 import { rateProviderConnectors } from "./connectors";
 import type { CurrencyPair, RatesResult } from "./types";
 
-export async function fetchRates(pair: CurrencyPair): Promise<RatesResult> {
+export async function fetchRates(
+  pair: CurrencyPair,
+  sourceAmount?: number
+): Promise<RatesResult> {
   const currencyPair = getCurrencyPair(pair);
 
   if (!currencyPair) {
@@ -25,6 +28,7 @@ export async function fetchRates(pair: CurrencyPair): Promise<RatesResult> {
       try {
         const quote = await connector.fetchRate({
           source: currencyPair.source,
+          sourceAmount,
           target: currencyPair.target
         });
 

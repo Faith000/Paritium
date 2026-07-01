@@ -50,7 +50,7 @@ const faqs = [
   {
     question: "Do I need to enter an amount to compare rates?",
     answer:
-      "No. Paritium displays each provider's published exchange rate so you can compare rates directly."
+      "You can compare published rates without an amount, but entering an amount lets Paritium estimate what the recipient receives after the listed transfer fee."
   },
   {
     question: "How do I download a provider's app?",

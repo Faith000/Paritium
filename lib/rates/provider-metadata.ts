@@ -13,8 +13,8 @@ export const providerMetadata: Record<ProviderId, ProviderMetadata> = {
       viewBox: "0 0 24 24"
     },
     websiteUrl: "https://wise.com/",
-    appStoreUrl: "https://www.google.com/search?q=Wise%20app%20store",
-    playStoreUrl: "https://www.google.com/search?q=Wise%20google%20play",
+    appStoreUrl: "https://apps.apple.com/us/app/wise-global-money/id612261027",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.transferwise.android",
     surveyUrl: "/survey?provider=wise",
     supportedCurrencies: ["USD", "GBP", "EUR", "CAD", "NGN"],
     transferMethods: ["Bank transfer", "Debit card", "Mobile wallet"]
@@ -29,8 +29,8 @@ export const providerMetadata: Record<ProviderId, ProviderMetadata> = {
       alt: "LemFi logo"
     },
     websiteUrl: "https://www.lemfi.com/",
-    appStoreUrl: "https://www.google.com/search?q=LemFi%20app%20store",
-    playStoreUrl: "https://www.google.com/search?q=LemFi%20google%20play",
+    appStoreUrl: "https://apps.apple.com/us/app/lemfi/id1533066809",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.lemonadeFinance.android",
     surveyUrl: "/survey?provider=lemfi",
     supportedCurrencies: ["USD", "GBP", "EUR", "CAD", "NGN"],
     transferMethods: ["Bank transfer", "Debit card", "Mobile wallet"]
@@ -45,8 +45,8 @@ export const providerMetadata: Record<ProviderId, ProviderMetadata> = {
       alt: "Remitly logo"
     },
     websiteUrl: "https://www.remitly.com/",
-    appStoreUrl: "https://www.google.com/search?q=Remitly%20app%20store",
-    playStoreUrl: "https://www.google.com/search?q=Remitly%20google%20play",
+    appStoreUrl: "https://apps.apple.com/us/app/remitly-send-money-abroad/id674258465",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.remitly.androidapp",
     surveyUrl: "/survey?provider=remitly",
     supportedCurrencies: ["USD", "GBP", "EUR", "CAD", "NGN"],
     transferMethods: ["Bank transfer", "Debit card", "Mobile wallet"]
@@ -61,8 +61,8 @@ export const providerMetadata: Record<ProviderId, ProviderMetadata> = {
       alt: "WorldRemit logo"
     },
     websiteUrl: "https://www.worldremit.com/",
-    appStoreUrl: "https://www.google.com/search?q=WorldRemit%20app%20store",
-    playStoreUrl: "https://www.google.com/search?q=WorldRemit%20google%20play",
+    appStoreUrl: "https://apps.apple.com/us/app/worldremit-money-transfer-app/id875855935",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.worldremit.android",
     surveyUrl: "/survey?provider=worldremit",
     supportedCurrencies: ["USD", "GBP", "EUR", "CAD", "NGN"],
     transferMethods: ["Bank transfer", "Debit card", "Mobile wallet"]
@@ -78,8 +78,8 @@ export const providerMetadata: Record<ProviderId, ProviderMetadata> = {
       viewBox: "0 0 24 24"
     },
     websiteUrl: "https://www.moneygram.com/",
-    appStoreUrl: "https://www.google.com/search?q=MoneyGram%20app%20store",
-    playStoreUrl: "https://www.google.com/search?q=MoneyGram%20google%20play",
+    appStoreUrl: "https://apps.apple.com/us/app/moneygram-money-transfers-app/id867619606",
+    playStoreUrl: "https://play.google.com/store/search?q=MoneyGram%20Money%20Transfers&c=apps",
     surveyUrl: "/survey?provider=moneygram",
     supportedCurrencies: ["USD", "GBP", "EUR", "CAD", "NGN"],
     transferMethods: ["Bank transfer", "Debit card", "Mobile wallet"]
@@ -94,8 +94,8 @@ export const providerMetadata: Record<ProviderId, ProviderMetadata> = {
       alt: "TapTap Send logo"
     },
     websiteUrl: "https://www.taptapsend.com/",
-    appStoreUrl: "https://www.google.com/search?q=TapTap%20Send%20app%20store",
-    playStoreUrl: "https://www.google.com/search?q=TapTap%20Send%20google%20play",
+    appStoreUrl: "https://apps.apple.com/us/app/taptap-send-money-transfer/id1413346006",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.taptapsend",
     surveyUrl: "/survey?provider=taptap-send",
     supportedCurrencies: ["USD", "GBP", "EUR", "CAD", "NGN"],
     transferMethods: ["Bank transfer", "Debit card", "Mobile wallet"]

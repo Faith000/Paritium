@@ -3,6 +3,7 @@ import type { CurrencyCode, ProviderId, ProviderRateQuote } from "../types";
 export type RateRequest = {
   source: CurrencyCode;
   target: CurrencyCode;
+  sourceAmount?: number;
 };
 
 export type RateConnectorContext = {

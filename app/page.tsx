@@ -375,11 +375,16 @@ function RateDataIllustration() {
         <span />
         <span />
       </div>
-      <div className="rate-chip chip-one">GBP</div>
-      <div className="rate-chip chip-two">NGN</div>
       <div className="rate-card-visual">
         <strong>1,964.82</strong>
         <span>Updated hourly</span>
+      </div>
+      <div className="source-currency-cloud">
+        {["GBP", "USD", "EUR", "CAD"].map((currency) => (
+          <span className="currency-chip" key={currency}>
+            {currency}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -388,21 +393,26 @@ function RateDataIllustration() {
 function RankingIllustration() {
   return (
     <div className="trust-illustration ranking-illustration" aria-hidden="true">
-      <div className="ranking-stack">
-        <div className="ranking-row rank-one">
-          <span>01</span>
-          <strong>Wise</strong>
-          <em>Best rate</em>
+      <div className="ranking-board">
+        <div className="ranking-score-card">
+          <span>#1</span>
+          <strong>Best rate first</strong>
+          <em>Freshness checked</em>
         </div>
-        <div className="ranking-row rank-two">
-          <span>02</span>
-          <strong>LemFi</strong>
-          <em>Fresh</em>
+        <div className="provider-node-cloud">
+          {["W", "L", "R", "M", "T", "W"].map((provider, index) => (
+            <span
+              className={`provider-node provider-node-${index + 1}`}
+              key={`${provider}-${index}`}
+            >
+              {provider}
+            </span>
+          ))}
         </div>
-        <div className="ranking-row rank-three">
-          <span>03</span>
-          <strong>Remitly</strong>
-          <em>Tracked</em>
+        <div className="ranking-scale">
+          <span />
+          <span />
+          <span />
         </div>
       </div>
       <div className="ranking-orbit" />
@@ -437,6 +447,7 @@ function CheckoutIllustration() {
       <div className="coin coin-one">£</div>
       <div className="coin coin-two">$</div>
       <div className="coin coin-three">₦</div>
+      <div className="coin coin-four">€</div>
     </div>
   );
 }
@@ -472,8 +483,6 @@ function ProviderCards() {
                 provider_name: rate.provider
               }}
               href={rate.websiteUrl}
-              target="_blank"
-              rel="noreferrer"
             >
               Website
             </TrackedLink>

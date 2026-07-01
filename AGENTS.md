@@ -45,10 +45,10 @@ Current product phase: website/prototype implementation. The Paritium mobile app
 
 - Paritium is a comparison and discovery platform, not a money transfer provider.
 - Never imply Paritium executes transfers, holds money, processes payments, guarantees checkout rates, or replaces provider due diligence.
-- Show provider-published rates only. Do not add calculator/send-amount flows unless the PRD is updated.
+- Show provider-published rates, transfer fees, and estimated recipient-receives values only for comparison. Paritium must not imply it guarantees checkout values or executes transfers.
 - Rank providers by the best rate for the selected currency pair, highest rate first.
 - Always display rate freshness context. Stale rates are rates older than 2 hours.
-- Provider website and app-store links must send users to the provider's own platform in a new tab.
+- Provider website and app-store links must send users to the provider's own platform in the same tab so the browser back button returns users to Paritium.
 - Survey collection is part of the product, both for Paritium feedback and provider-specific sentiment.
 - The future Paritium app section should remain "coming soon" until real App Store and Google Play URLs are supplied.
 
@@ -150,6 +150,8 @@ Keep provider data normalized around these fields:
 - `logo`
 - `rate`
 - `rateLabel`
+- `transferFee`
+- `transferFeeLabel`
 - `updatedAt`
 - `stale`
 - `websiteUrl`
@@ -195,7 +197,7 @@ Current connector architecture:
 - Keep pages scannable for mobile users.
 - Use semantic HTML, accessible labels, table captions, and clear focusable controls.
 - Avoid adding user login/account flows in the current phase.
-- Avoid fee comparison, transfer estimates, and send-amount inputs unless explicitly approved.
+- Transfer fee comparison, send-amount input, and recipient-receives estimates are approved for the homepage hero and Compare Rates table. Avoid broader transfer-estimate flows unless explicitly approved.
 
 ## Design System Notes
 
@@ -285,7 +287,7 @@ Events that should be tracked once analytics is implemented:
 
 - Page views.
 - Currency pair selected.
-- Provider row viewed or expanded.
+- Provider row expanded, if an expandable row/details pattern is reintroduced.
 - Provider website clicked.
 - App Store link clicked.
 - Google Play link clicked.
@@ -374,7 +376,7 @@ When relevant, also verify:
 - `/api/rates?pair=GBP_NGN` returns JSON.
 - Unknown API pair values fall back to `GBP_NGN`.
 - New public pages are included in `app/sitemap.ts`.
-- External links use `target="_blank"` and `rel="noreferrer"`.
+- Outbound provider, app-store, survey, and social links navigate in the same tab unless the product owner explicitly asks for new-tab behavior.
 
 For visual changes, check desktop and mobile widths. Pay special attention to header wrapping, rate tables, provider cards, and long provider names.
 
@@ -385,7 +387,8 @@ The repo currently uses mock/configured rate data, not live provider APIs.
 Inputs still needed for production:
 
 - Confirmed provider API access and rate limits.
-- Wise production/sandbox base URL and token, using `WISE_API_BASE_URL` and `WISE_API_TOKEN` locally.
+- Wise production/sandbox base URL and token, using `WISE_API_BASE_URL` and `WISE_API_TOKEN` or `WISE_API_KEY` locally.
+- Wise quote fees require `WISE_PROFILE_ID` or `WISE_QUOTE_PROFILE_ID` plus a source amount. If profile configuration is absent or the quote request fails, the Wise connector keeps the live `/v1/rates` result and falls back to the configured Wise fee values.
 - Real provider website URLs.
 - Real App Store and Google Play URLs for each provider.
 - Final Paritium survey URL or embed code.
@@ -406,7 +409,7 @@ Inputs still needed for production:
 - Rate timestamps are accurate and visible.
 - API failures do not crash pages; last-known rates and staleness warnings are shown.
 - Surveys are accessible without login.
-- Provider-specific survey links exist beside provider rows.
+- Provider-specific survey links should exist on provider-specific feedback surfaces. They are not currently displayed in the Compare Rates table after the details column was removed.
 - GA4 page views and custom click events work on all pages once analytics is configured.
 - Cookie consent happens before analytics tracking.
 - New provider integrations are documented and addable quickly.
