@@ -102,7 +102,7 @@ Note: `npm run lint` uses `next lint`, which may require configuration depending
 - `components/SiteFooter.tsx`: shared footer.
 - `lib/rates.ts`: compatibility facade for rate types, mock helpers, and the async rate service.
 - `lib/rates/`: provider metadata, currency-pair config, mock fallback data, connector contracts, and rate-service orchestration.
-- `lib/rates/connectors/`: one provider connector per module. `wise.ts` is scaffolded and activates only when `WISE_API_TOKEN` is configured.
+- `lib/rates/connectors/`: provider connector modules. `best-rates.ts` can return multiple provider rows from the Best Rates aggregator when `BEST_RATES_API_KEY` is configured. `wise.ts` activates only when a Wise token is configured.
 - `app/globals.css`: design tokens, layout primitives, component styling, responsive rules.
 
 ## Current Functional Surface
@@ -137,7 +137,7 @@ Current providers represented in mock/config data:
 - MoneyGram
 - TapTap Send
 
-Current provider links are placeholder Google searches generated in `lib/rates.ts`. Replace them with real provider website, App Store, and Google Play URLs before production.
+Known provider links live in `lib/rates/provider-metadata.ts`. Providers discovered dynamically through Best Rates product metadata may fall back to Google search URLs for website and store links until real provider URLs are confirmed.
 
 ## Data Model Guidance
 
@@ -180,7 +180,9 @@ Current connector architecture:
 - Mock fallback data lives in `lib/rates/mock-data.ts`.
 - Connector contracts live in `lib/rates/connectors/types.ts`.
 - Registered live connectors live in `lib/rates/connectors/index.ts`.
-- `fetchRates(pair)` in `lib/rates/service.ts` combines configured live connectors, provider-level fallback quotes, and remaining mock providers, then sorts by best rate.
+- `best-rates.ts` uses `BEST_RATES_API_KEY` and `BEST_RATES_API_BASE_URL` server-side to fetch the full Best Rates provider list for a selected corridor and normalize each product into Paritium's provider table shape. It retries transient 5xx responses, caches current rates briefly, and keeps an in-memory last-known-good response for the running server process.
+- `fetchRates(pair)` in `lib/rates/service.ts` combines configured live connector quotes, provider-level fallback quotes, and remaining mock providers, then sorts by best rate. Connectors may return one quote or many quotes.
+- Production data mode is enabled when `VERCEL_ENV=production` or `PARITIUM_DATA_MODE=production`. In this mode, Paritium should show only Wise in the public comparison table and must not show bundled mock providers as live public data.
 - `/api/rates` must call the rate service, not hardcoded provider arrays.
 - Client-facing rate refresh flows on the homepage and Compare Rates page should fetch `/api/rates?pair=...`; direct mock helpers are only initial fallbacks for fast first render.
 - Live connector secrets must be read only from server environment variables and must never be exposed to client components.
@@ -387,10 +389,11 @@ The repo currently uses mock/configured rate data, not live provider APIs.
 Inputs still needed for production:
 
 - Confirmed provider API access and rate limits.
+- Confirmed Best Rates production plan, usage limits, and permission to display returned provider logos/rates publicly.
 - Wise production/sandbox base URL and token, using `WISE_API_BASE_URL` and `WISE_API_TOKEN` or `WISE_API_KEY` locally.
 - Wise quote fees require `WISE_PROFILE_ID` or `WISE_QUOTE_PROFILE_ID` plus a source amount. If profile configuration is absent or the quote request fails, the Wise connector keeps the live `/v1/rates` result and falls back to the configured Wise fee values.
-- Real provider website URLs.
-- Real App Store and Google Play URLs for each provider.
+- Real provider website URLs for Best Rates providers that are not already in `provider-metadata.ts`.
+- Real App Store and Google Play URLs for Best Rates providers that are not already in `provider-metadata.ts`.
 - Final Paritium survey URL or embed code.
 - Provider-specific survey URLs or form-generation approach.
 - GA4 measurement ID.

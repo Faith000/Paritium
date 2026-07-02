@@ -1,7 +1,7 @@
 import { siMoneygram, siWise } from "simple-icons";
-import type { ProviderId, ProviderMetadata } from "./types";
+import type { ProviderMetadata } from "./types";
 
-export const providerMetadata: Record<ProviderId, ProviderMetadata> = {
+export const providerMetadata: Partial<Record<string, ProviderMetadata>> = {
   wise: {
     id: "wise",
     provider: "Wise",

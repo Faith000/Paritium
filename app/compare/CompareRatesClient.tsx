@@ -14,6 +14,14 @@ type PairOption = {
   label: string;
 };
 
+type RatesResponse = {
+  providers: ProviderRate[];
+  sources?: Array<{
+    providerId: string;
+    status: string;
+  }>;
+};
+
 const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
 function timeAgo(iso: string) {
@@ -108,20 +116,29 @@ export default function CompareRatesClient({
   ratesByPair: Record<CurrencyPair, ProviderRate[]>;
 }) {
   const searchParams = useSearchParams();
-  const [selectedPair, setSelectedPair] = useState<CurrencyPair>("GBP_NGN");
-  const [draftFromCurrency, setDraftFromCurrency] = useState("GBP");
-  const [draftToCurrency, setDraftToCurrency] = useState("NGN");
-  const [sendAmount, setSendAmount] = useState(1000);
-  const [draftSendAmount, setDraftSendAmount] = useState("1000");
+  const initialPair = getValidPair(searchParams.get("pair"), pairs) ?? "GBP_NGN";
+  const initialPairLabel =
+    pairs.find((pair) => pair.value === initialPair)?.label ?? "GBP → NGN";
+  const [initialFromCurrency, initialToCurrency] = initialPairLabel.split(" → ");
+  const initialAmount = getValidAmount(searchParams.get("amount")) ?? 1000;
+  const [selectedPair, setSelectedPair] = useState<CurrencyPair>(initialPair);
+  const [draftFromCurrency, setDraftFromCurrency] = useState(initialFromCurrency);
+  const [draftToCurrency, setDraftToCurrency] = useState(initialToCurrency);
+  const [sendAmount, setSendAmount] = useState(initialAmount);
+  const [draftSendAmount, setDraftSendAmount] = useState(initialAmount.toString());
   const [liveRatesByPair, setLiveRatesByPair] = useState(ratesByPair);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<"from" | "to" | null>(null);
   const compareStartedAt = useRef(Date.now());
+  const hasSkippedInitialRefresh = useRef(false);
   const selectorsRef = useRef<HTMLDivElement>(null);
 
   const rates = liveRatesByPair[selectedPair] ?? ratesByPair[selectedPair];
   const averageRate = useMemo(
-    () => rates.reduce((total, rate) => total + rate.rate, 0) / rates.length,
+    () =>
+      rates.length > 0
+        ? rates.reduce((total, rate) => total + rate.rate, 0) / rates.length
+        : 0,
     [rates]
   );
   const staleRates = useMemo(() => rates.filter((rate) => rate.stale), [rates]);
@@ -176,20 +193,34 @@ export default function CompareRatesClient({
     if (nextToCurrency) {
       setDraftToCurrency(nextToCurrency);
     }
+
   }, [pairs, searchParams]);
 
   useEffect(() => {
     let isCurrent = true;
 
+    if (!hasSkippedInitialRefresh.current) {
+      hasSkippedInitialRefresh.current = true;
+
+      return () => {
+        isCurrent = false;
+      };
+    }
+
     setIsRefreshing(true);
 
     fetchPairRates(selectedPair, sendAmount)
-      .then((providerRates) => {
+      .then((ratesResult) => {
         if (!isCurrent) return;
 
         setLiveRatesByPair((currentRates) => ({
           ...currentRates,
-          [selectedPair]: providerRates
+          [selectedPair]: shouldUseRatesResult(
+            currentRates[selectedPair] ?? [],
+            ratesResult
+          )
+            ? ratesResult.providers
+            : currentRates[selectedPair]
         }));
       })
       .catch(() => {
@@ -305,11 +336,16 @@ export default function CompareRatesClient({
               setIsRefreshing(true);
 
               try {
-                const providerRates = await fetchPairRates(nextPair, nextAmount);
+                const ratesResult = await fetchPairRates(nextPair, nextAmount);
 
                 setLiveRatesByPair((currentRates) => ({
                   ...currentRates,
-                  [nextPair]: providerRates
+                  [nextPair]: shouldUseRatesResult(
+                    currentRates[nextPair] ?? [],
+                    ratesResult
+                  )
+                    ? ratesResult.providers
+                    : currentRates[nextPair]
                 }));
               } catch {
                 // Keep the current fallback rates visible.
@@ -333,8 +369,11 @@ export default function CompareRatesClient({
 
       <div className="table-shell compare-table-shell">
         <div className="table-toolbar compare-table-toolbar">
-          <span>{rates.length} providers ranked by published rate</span>
-          <span>Best rate: {rates[0].rateLabel}</span>
+          <span>
+            {rates.length} provider{rates.length === 1 ? "" : "s"} ranked by
+            published rate
+          </span>
+          {rates[0] ? <span>Best rate: {rates[0].rateLabel}</span> : null}
         </div>
         <div className="table-scroll">
           <table>
@@ -354,6 +393,15 @@ export default function CompareRatesClient({
               </tr>
             </thead>
             <tbody>
+              {rates.length === 0 ? (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="empty-rate-state">
+                      No live provider rates are available for this route yet.
+                    </div>
+                  </td>
+                </tr>
+              ) : null}
               {rates.map((rate, index) => {
                 const rateDifference = rate.rate - averageRate;
                 const recipientReceives = calculateRecipientReceives(
@@ -582,7 +630,7 @@ export default function CompareRatesClient({
   );
 }
 
-async function fetchPairRates(pair: CurrencyPair, amount?: number) {
+async function fetchPairRates(pair: CurrencyPair, amount?: number): Promise<RatesResponse> {
   const searchParams = new URLSearchParams({ pair });
 
   if (amount && Number.isFinite(amount) && amount > 0) {
@@ -597,9 +645,24 @@ async function fetchPairRates(pair: CurrencyPair, amount?: number) {
     throw new Error("Unable to fetch provider rates");
   }
 
-  const data = (await response.json()) as { providers: ProviderRate[] };
+  const data = (await response.json()) as RatesResponse;
 
-  return data.providers;
+  return data;
+}
+
+function shouldUseRatesResult(
+  currentRates: ProviderRate[],
+  ratesResult: RatesResponse
+) {
+  if (hasLiveBestRates(ratesResult)) return true;
+
+  return ratesResult.providers.length >= currentRates.length;
+}
+
+function hasLiveBestRates(ratesResult: RatesResponse) {
+  return ratesResult.sources?.some(
+    (source) => source.providerId === "best-rates" && source.status === "live"
+  );
 }
 
 function getSecondsBeforeClick(startedAt: number) {

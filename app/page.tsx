@@ -1,5 +1,6 @@
 import { getCurrencyPairs, getRates } from "@/lib/rates";
 import type { ProviderLogo as ProviderLogoType } from "@/lib/rates";
+import { shouldUseProductionRateData } from "@/lib/rates/environment";
 import Image from "next/image";
 import HeroRateSelector from "@/components/HeroRateSelector";
 import NotifyMeForm from "@/components/NotifyMeForm";
@@ -9,6 +10,7 @@ import TrackedLink from "@/components/TrackedLink";
 
 const pairs = getCurrencyPairs();
 const rates = getRates("GBP_NGN");
+const productionRateData = shouldUseProductionRateData();
 
 const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
@@ -32,19 +34,7 @@ export default function Home() {
             pick the best deal
           </p>
           <div className="hero-actions">
-            <TrackedLink
-              className="button hero-download-cta"
-              eventName="paritium_app_cta_clicked"
-              eventParameters={{
-                cta_name: "download_app",
-                platform: "web"
-              }}
-              href="#app-title"
-            >
-              <PhoneIcon />
-              Download App
-            </TrackedLink>
-            <a className="button button-secondary" href="#how-it-works">
+            <a className="button button-primary" href="#how-it-works">
               How it works
             </a>
           </div>
@@ -55,7 +45,7 @@ export default function Home() {
             </span>
             <span>
               <TrustIcon type="providers" />
-              3+ providers compared
+              {productionRateData ? "Wise rates only" : "3+ providers compared"}
             </span>
             <span>
               <TrustIcon type="free" />
@@ -73,7 +63,10 @@ export default function Home() {
         <div className="proof-strip-inner">
           {[
             ["4", "active currency routes"],
-            ["6", "providers in comparison"],
+            [
+              productionRateData ? "1" : "6",
+              productionRateData ? "verified live provider" : "providers in comparison"
+            ],
             ["0", "transfers handled by Paritium"],
             ["Hourly", "rate freshness target"]
           ].map(([value, label]) => (
@@ -249,38 +242,6 @@ export default function Home() {
 
       <SiteFooter />
     </main>
-  );
-}
-
-function PhoneIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      height="20"
-      viewBox="0 0 24 24"
-      width="20"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect
-        height="18"
-        rx="3"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        width="11"
-        x="6.5"
-        y="3"
-      />
-      <path
-        d="M10.75 17.25h2.5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
   );
 }
 

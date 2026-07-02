@@ -2,7 +2,8 @@ import { composeProviderRates } from "./compose";
 import { getCurrencyPair } from "./pairs";
 import { getMockQuoteForProvider, getMockQuotes } from "./connectors/mock";
 import { rateProviderConnectors } from "./connectors";
-import type { CurrencyPair, RatesResult } from "./types";
+import { shouldUseProductionRateData } from "./environment";
+import type { CurrencyPair, ProviderRateQuote, RatesResult } from "./types";
 
 export async function fetchRates(
   pair: CurrencyPair,
@@ -19,14 +20,14 @@ export async function fetchRates(
       if (!connector.enabled) {
         return {
           connector,
-          quote: null,
+          quotes: [],
           status: "unavailable" as const,
           error: "Connector is not configured"
         };
       }
 
       try {
-        const quote = await connector.fetchRate({
+        const quotes = await connector.fetchRate({
           source: currencyPair.source,
           sourceAmount,
           target: currencyPair.target
@@ -34,13 +35,13 @@ export async function fetchRates(
 
         return {
           connector,
-          quote,
+          quotes: Array.isArray(quotes) ? quotes : [quotes],
           status: "live" as const
         };
       } catch (error) {
         return {
           connector,
-          quote: null,
+          quotes: [],
           status: "fallback" as const,
           error: error instanceof Error ? error.message : "Unknown connector error"
         };
@@ -48,11 +49,17 @@ export async function fetchRates(
     })
   );
 
-  const liveQuotes = liveResults.flatMap((result) =>
-    result.quote ? [result.quote] : []
+  const liveQuotes = dedupeProviderQuotes(
+    liveResults.flatMap((result) => result.quotes)
+  );
+  const productionRateData = shouldUseProductionRateData();
+  const hasBestRatesQuotes = liveResults.some(
+    (result) =>
+      result.connector.providerId === "best-rates" && result.quotes.length > 0
   );
   const fallbackQuotes = liveResults.flatMap((result) => {
-    if (result.quote) return [];
+    if (result.quotes.length > 0) return [];
+    if (productionRateData && result.connector.providerId !== "wise") return [];
 
     const fallbackQuote = getMockQuoteForProvider(
       pair,
@@ -61,12 +68,14 @@ export async function fetchRates(
 
     return fallbackQuote ? [{ ...fallbackQuote, source: "fallback" as const }] : [];
   });
-  const connectorProviderIds = new Set(
-    rateProviderConnectors.map((connector) => connector.providerId)
-  );
-  const mockQuotes = getMockQuotes(pair).filter(
-    (quote) => !connectorProviderIds.has(quote.providerId)
-  );
+  const liveProviderIds = new Set(liveQuotes.map((quote) => quote.providerId));
+  const mockQuotes = hasBestRatesQuotes
+    ? []
+    : productionRateData
+      ? []
+    : getMockQuotes(pair).filter(
+        (quote) => !liveProviderIds.has(quote.providerId)
+      );
   const providers = composeProviderRates(pair, [
     ...liveQuotes,
     ...fallbackQuotes,
@@ -89,6 +98,16 @@ export async function fetchRates(
       }))
     ]
   };
+}
+
+function dedupeProviderQuotes(quotes: ProviderRateQuote[]) {
+  const quotesByProvider = new Map<string, ProviderRateQuote>();
+
+  for (const quote of quotes) {
+    quotesByProvider.set(quote.providerId, quote);
+  }
+
+  return [...quotesByProvider.values()];
 }
 
 export function getMockRatesResult(pair: CurrencyPair): RatesResult {

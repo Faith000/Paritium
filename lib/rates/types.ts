@@ -9,13 +9,7 @@ export type PairOption = {
   target: CurrencyCode;
 };
 
-export type ProviderId =
-  | "wise"
-  | "lemfi"
-  | "remitly"
-  | "worldremit"
-  | "moneygram"
-  | "taptap-send";
+export type ProviderId = string;
 
 export type ProviderLogo =
   | {
@@ -64,6 +58,7 @@ export type TransferFee = {
 
 export type ProviderRateQuote = {
   providerId: ProviderId;
+  metadata?: ProviderMetadata;
   rate: number;
   transferFee: TransferFee;
   updatedAt: string;

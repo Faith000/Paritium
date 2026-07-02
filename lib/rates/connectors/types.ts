@@ -27,5 +27,5 @@ export type RateProviderConnector = {
   fetchRate(
     request: RateRequest,
     context?: RateConnectorContext
-  ): Promise<ProviderRateQuote>;
+  ): Promise<ProviderRateQuote | ProviderRateQuote[]>;
 };
