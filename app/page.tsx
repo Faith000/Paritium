@@ -360,16 +360,6 @@ function RankingIllustration() {
           <strong>Best rate first</strong>
           <em>Freshness checked</em>
         </div>
-        <div className="provider-node-cloud">
-          {["W", "L", "R", "M", "T", "W"].map((provider, index) => (
-            <span
-              className={`provider-node provider-node-${index + 1}`}
-              key={`${provider}-${index}`}
-            >
-              {provider}
-            </span>
-          ))}
-        </div>
         <div className="ranking-scale">
           <span />
           <span />
@@ -377,7 +367,6 @@ function RankingIllustration() {
         </div>
       </div>
       <div className="ranking-orbit" />
-      <div className="ranking-badge">Neutral</div>
     </div>
   );
 }
