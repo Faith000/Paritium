@@ -39,10 +39,8 @@ export default function SiteFooter() {
           <CookiePreferencesButton />
         </div>
         <div>
-          <h2>Connect</h2>
-          <a href="https://x.com">Twitter/X</a>
-          <a href="https://linkedin.com">LinkedIn</a>
-          <a href="https://instagram.com">Instagram</a>
+          <h2>Contact us</h2>
+          <a href="mailto:info@paritium.com">info@paritium.com</a>
         </div>
       </div>
       <div className="footer-bottom">

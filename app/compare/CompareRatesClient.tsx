@@ -128,6 +128,7 @@ export default function CompareRatesClient({
   const [draftSendAmount, setDraftSendAmount] = useState(initialAmount.toString());
   const [liveRatesByPair, setLiveRatesByPair] = useState(ratesByPair);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasRestoredEntry, setHasRestoredEntry] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<"from" | "to" | null>(null);
   const compareStartedAt = useRef(Date.now());
   const hasSkippedInitialRefresh = useRef(false);
@@ -166,6 +167,24 @@ export default function CompareRatesClient({
   }, []);
 
   useEffect(() => {
+    if (!hasRestoredEntry) return;
+
+    if (draftPair) {
+      persistSelectedPair(draftPair);
+    }
+  }, [draftPair, hasRestoredEntry]);
+
+  useEffect(() => {
+    if (!hasRestoredEntry) return;
+
+    const nextAmount = getValidAmount(draftSendAmount);
+
+    if (nextAmount) {
+      persistSendAmount(nextAmount);
+    }
+  }, [draftSendAmount, hasRestoredEntry]);
+
+  useEffect(() => {
     const pairFromUrl = searchParams.get("pair");
     const amountFromUrl = searchParams.get("amount");
     const storedPair = getStoredPair() ?? getPairCookie() ?? getWindowNamePair();
@@ -179,7 +198,10 @@ export default function CompareRatesClient({
       setDraftSendAmount(nextAmount.toString());
     }
 
-    if (!nextPair) return;
+    if (!nextPair) {
+      setHasRestoredEntry(true);
+      return;
+    }
 
     const pairLabel = pairs.find((pair) => pair.value === nextPair)?.label;
     const [nextFromCurrency, nextToCurrency] = pairLabel?.split(" → ") ?? [];
@@ -194,6 +216,7 @@ export default function CompareRatesClient({
       setDraftToCurrency(nextToCurrency);
     }
 
+    setHasRestoredEntry(true);
   }, [pairs, searchParams]);
 
   useEffect(() => {

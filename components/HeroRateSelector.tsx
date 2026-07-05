@@ -22,13 +22,32 @@ export default function HeroRateSelector({
   );
   const [fromCurrency, setFromCurrency] = useState("GBP");
   const [toCurrency, setToCurrency] = useState("NGN");
-  const [sendAmount, setSendAmount] = useState("1000");
+  const [sendAmount, setSendAmount] = useState("");
+  const [hasRestoredEntry, setHasRestoredEntry] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<"from" | "to" | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const draftPair = getPairValue(pairs, fromCurrency, toCurrency);
   const compareHref = `/compare?pair=${draftPair ?? "GBP_NGN"}&amount=${encodeURIComponent(
     normalizeAmount(sendAmount).toString()
   )}#rates-title`;
+
+  useEffect(() => {
+    const storedPair = getStoredPair() ?? getPairCookie() ?? getWindowNamePair();
+    const nextPair = pairs.find((pair) => pair.value === storedPair);
+    const nextAmount = getStoredAmount() ?? getAmountCookie();
+    const shouldRestoreAmount = !isPageRefresh();
+
+    if (nextPair) {
+      setFromCurrency(nextPair.label.split(" → ")[0]);
+      setToCurrency(nextPair.label.split(" → ")[1]);
+    }
+
+    if (shouldRestoreAmount && nextAmount !== null && isValidAmount(nextAmount)) {
+      setSendAmount(nextAmount);
+    }
+
+    setHasRestoredEntry(true);
+  }, [pairs]);
 
   useEffect(() => {
     function closeDropdown(event: MouseEvent) {
@@ -41,6 +60,22 @@ export default function HeroRateSelector({
 
     return () => document.removeEventListener("mousedown", closeDropdown);
   }, []);
+
+  useEffect(() => {
+    if (!hasRestoredEntry) return;
+
+    if (draftPair) {
+      persistSelectedPair(draftPair);
+    }
+  }, [draftPair, hasRestoredEntry]);
+
+  useEffect(() => {
+    if (!hasRestoredEntry) return;
+
+    if (isValidAmount(sendAmount)) {
+      persistSendAmount(Number(sendAmount));
+    }
+  }, [hasRestoredEntry, sendAmount]);
 
   return (
     <div className="hero-route-launcher">
@@ -85,7 +120,10 @@ export default function HeroRateSelector({
               id="hero-send-amount"
               inputMode="decimal"
               min="0"
-              onChange={(event) => setSendAmount(event.target.value)}
+              onChange={(event) => {
+                setSendAmount(event.target.value);
+              }}
+              placeholder="0.00"
               type="number"
               value={sendAmount}
             />
@@ -195,6 +233,20 @@ function normalizeAmount(value: string) {
   return Number.isFinite(amount) && amount > 0 ? amount : 1000;
 }
 
+function isValidAmount(value: string | null) {
+  const amount = Number(value);
+
+  return Number.isFinite(amount) && amount > 0;
+}
+
+function isPageRefresh() {
+  const navigationEntry = performance.getEntriesByType("navigation")[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+
+  return navigationEntry?.type === "reload";
+}
+
 function getPairValue(
   pairs: PairOption[],
   fromCurrency: string,
@@ -202,6 +254,44 @@ function getPairValue(
 ) {
   return pairs.find((pair) => pair.label === `${fromCurrency} → ${toCurrency}`)
     ?.value;
+}
+
+function getStoredPair() {
+  try {
+    return window.localStorage.getItem("paritium:selectedPair");
+  } catch {
+    return null;
+  }
+}
+
+function getPairCookie() {
+  return (
+    document.cookie
+      .split("; ")
+      .find((cookie) => cookie.startsWith("paritium_selected_pair="))
+      ?.split("=")[1] ?? null
+  );
+}
+
+function getWindowNamePair() {
+  return window.name.match(/paritium_selected_pair=([A-Z_]+)/)?.[1] ?? null;
+}
+
+function getStoredAmount() {
+  try {
+    return window.localStorage.getItem("paritium:sendAmount");
+  } catch {
+    return null;
+  }
+}
+
+function getAmountCookie() {
+  return (
+    document.cookie
+      .split("; ")
+      .find((cookie) => cookie.startsWith("paritium_send_amount="))
+      ?.split("=")[1] ?? null
+  );
 }
 
 function persistSelectedPair(pair: CurrencyPair) {

@@ -193,6 +193,7 @@ Current connector architecture:
 
 - Lead with the actual comparison experience, not a marketing-only landing page.
 - The homepage hero should launch users into the Compare Rates table. Keep the selector CTA linked to `/compare?pair=...#rates-title`; do not reintroduce a best-rate summary card in the hero.
+- Homepage and Compare Rates controls should remember the user's most recent valid currency pair and send amount in browser storage/cookies, then restore that entry when the user returns to the homepage. On a hard homepage refresh, the amount input should be empty and show a `0.00` placeholder instead of displaying a saved or default amount.
 - Keep copy transparent, practical, and confidence-building.
 - Use "published rates" language when describing data.
 - Mention that checkout rates may differ because providers can change rates or fees.
@@ -344,6 +345,7 @@ Current `next.config.mjs` disables `x-powered-by` via `poweredByHeader: false`. 
 - Avoid hardcoding production secrets, analytics IDs, survey form IDs, or external API credentials.
 - Keep imports using the `@/*` path alias when importing from project root.
 - Preserve the product disclaimer in footer and relevant trust sections.
+- Footer contact column should be titled "Contact us" and list only `info@paritium.com`; do not add social media links unless the product owner explicitly asks for them.
 
 ## Keeping This File Current
 
@@ -379,7 +381,7 @@ When relevant, also verify:
 - `/api/rates?pair=GBP_NGN` returns JSON.
 - Unknown API pair values fall back to `GBP_NGN`.
 - New public pages are included in `app/sitemap.ts`.
-- Outbound provider, app-store, survey, and social links navigate in the same tab unless the product owner explicitly asks for new-tab behavior.
+- Outbound provider, app-store, survey, and any future social links navigate in the same tab unless the product owner explicitly asks for new-tab behavior.
 
 For visual changes, check desktop and mobile widths. Pay special attention to header wrapping, rate tables, provider cards, and long provider names.
 
@@ -402,7 +404,7 @@ Inputs still needed for production:
 - Cookie consent implementation requirements.
 - Legal review of the Privacy Policy and confirmation of the responsible legal entity and mailing address.
 - Legal review of the Terms of Use, including confirmation of governing law and forum. Cookie disclosures currently live in `/privacy#cookies`.
-- Contact and social URLs.
+- Final contact email and any future social URLs.
 - Paritium app store URLs when launched.
 - Hosting/CDN/security-header requirements.
 - Monitoring and error tracking configuration.

@@ -118,11 +118,6 @@ export default function AboutPage() {
           ))}
         </div>
 
-        <div className="independence-note">
-          Paritium has no commercial relationship with listed providers in this
-          prototype. Rates and provider links are presented independently for
-          comparison.
-        </div>
       </section>
 
       <section className="contact-cta" aria-labelledby="contact-title">
@@ -146,8 +141,8 @@ export default function AboutPage() {
           >
             Take the survey
           </TrackedLink>
-          <a className="button button-secondary" href="mailto:hello@paritium.com">
-            hello@paritium.com
+          <a className="button button-secondary" href="mailto:info@paritium.com">
+            info@paritium.com
           </a>
         </div>
       </section>
