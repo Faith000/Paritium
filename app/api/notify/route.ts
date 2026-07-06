@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const apiKey = process.env.BREVO_API_KEY;
+  const apiKey = getBrevoApiKey();
   const listId = getBrevoListId();
 
   if (!apiKey || !listId) {
@@ -65,8 +65,12 @@ export async function POST(request: Request) {
   });
 }
 
+function getBrevoApiKey() {
+  return process.env.BREVO_API_KEY?.trim() ?? "";
+}
+
 function getBrevoListId() {
-  const listId = Number(process.env.BREVO_LIST_ID);
+  const listId = Number(process.env.BREVO_LIST_ID?.trim());
 
   return Number.isInteger(listId) && listId > 0 ? listId : null;
 }
@@ -84,6 +88,14 @@ async function getBrevoErrorMessage(response: Response) {
 
     if (payload.code === "duplicate_parameter") {
       return "You are already on the list.";
+    }
+
+    if (
+      response.status === 401 ||
+      payload.code === "unauthorized" ||
+      payload.message?.toLowerCase().includes("key not found")
+    ) {
+      return "The waitlist is not configured correctly yet.";
     }
 
     return payload.message;
