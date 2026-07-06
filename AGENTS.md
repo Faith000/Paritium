@@ -97,6 +97,7 @@ Note: `npm run lint` uses `next lint`, which may require configuration depending
 - `app/privacy/page.tsx`: privacy policy covering analytics consent, browser storage, surveys, external links, retention, and user rights.
 - `app/terms/page.tsx`: terms covering comparison scope, rate and ranking limitations, external providers, acceptable use, and liability boundaries.
 - `app/api/rates/route.ts`: JSON API for rate data by currency pair.
+- `app/api/notify/route.ts`: server-side Brevo waitlist subscription endpoint for the Notify Me form.
 - `app/sitemap.ts` and `app/robots.ts`: SEO discovery routes.
 - `components/SiteHeader.tsx`: shared responsive header, primary navigation, active route state, CTA, and mobile hamburger menu.
 - `components/SiteFooter.tsx`: shared footer.
@@ -302,6 +303,14 @@ Events that should be tracked once analytics is implemented:
 - Time spent on Compare Rates before provider click.
 
 Do not add analytics that fires before consent.
+
+Notify Me waitlist:
+
+- The homepage Notify Me form posts to `/api/notify`.
+- `/api/notify` uses Brevo server-side with `BREVO_API_KEY` and `BREVO_LIST_ID`.
+- Do not expose Brevo credentials to client components.
+- Do not send submitted email addresses to GA4 or other analytics tools.
+- Track `notify_me_submitted` only after the Brevo request succeeds.
 
 Current implementation: `components/GoogleAnalytics.tsx` stores the visitor's analytics choice in local storage, queues denied Consent Mode defaults, loads `gtag.js` only after analytics consent, and sends an explicit GA4 `page_view` only after the library reports that it is ready. It tracks subsequent App Router pathname changes. The footer provides a persistent preference-control path. The measurement ID is supplied through `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
 

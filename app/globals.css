@@ -3300,6 +3300,28 @@ td a:hover {
   padding: 0 18px;
 }
 
+.notify-form button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.notify-form-message {
+  border-radius: 8px;
+  font-size: 13px;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.notify-form-message-success {
+  background: #e9f8ef;
+  color: #0d6b45;
+}
+
+.notify-form-message-error {
+  background: #fff0ed;
+  color: #9d261b;
+}
+
 .app-mockup {
   aspect-ratio: 2 / 3;
   align-self: end;
