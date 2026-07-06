@@ -97,6 +97,7 @@ Note: `npm run lint` uses `next lint`, which may require configuration depending
 - `app/privacy/page.tsx`: privacy policy covering analytics consent, browser storage, surveys, external links, retention, and user rights.
 - `app/terms/page.tsx`: terms covering comparison scope, rate and ranking limitations, external providers, acceptable use, and liability boundaries.
 - `app/api/rates/route.ts`: JSON API for rate data by currency pair.
+- `app/api/notify/route.ts`: server-side Brevo waitlist subscription endpoint for the Notify Me form.
 - `app/sitemap.ts` and `app/robots.ts`: SEO discovery routes.
 - `components/SiteHeader.tsx`: shared responsive header, primary navigation, active route state, CTA, and mobile hamburger menu.
 - `components/SiteFooter.tsx`: shared footer.
@@ -183,6 +184,7 @@ Current connector architecture:
 - `best-rates.ts` uses `BEST_RATES_API_KEY` and `BEST_RATES_API_BASE_URL` server-side to fetch the full Best Rates provider list for a selected corridor and normalize each product into Paritium's provider table shape. It retries transient 5xx responses, caches current rates briefly, and keeps an in-memory last-known-good response for the running server process.
 - `fetchRates(pair)` in `lib/rates/service.ts` combines configured live connector quotes, provider-level fallback quotes, and remaining mock providers, then sorts by best rate. Connectors may return one quote or many quotes.
 - Production data mode is enabled when `VERCEL_ENV=production` or `PARITIUM_DATA_MODE=production`. In this mode, Paritium should show only Wise in the public comparison table and must not show bundled mock providers as live public data.
+- Preview data mode is the default for Vercel Preview, local development, and any environment without `PARITIUM_DATA_MODE=production`. Preview mode intentionally keeps the full mock comparison look for stakeholder review. Do not set `PARITIUM_DATA_MODE=production` in the Vercel Preview environment unless the product owner asks to test Wise-only behavior there.
 - `/api/rates` must call the rate service, not hardcoded provider arrays.
 - Client-facing rate refresh flows on the homepage and Compare Rates page should fetch `/api/rates?pair=...`; direct mock helpers are only initial fallbacks for fast first render.
 - Live connector secrets must be read only from server environment variables and must never be exposed to client components.
@@ -301,6 +303,14 @@ Events that should be tracked once analytics is implemented:
 - Time spent on Compare Rates before provider click.
 
 Do not add analytics that fires before consent.
+
+Notify Me waitlist:
+
+- The homepage Notify Me form posts to `/api/notify`.
+- `/api/notify` uses Brevo server-side with `BREVO_API_KEY` and `BREVO_LIST_ID`.
+- Do not expose Brevo credentials to client components.
+- Do not send submitted email addresses to GA4 or other analytics tools.
+- Track `notify_me_submitted` only after the Brevo request succeeds.
 
 Current implementation: `components/GoogleAnalytics.tsx` stores the visitor's analytics choice in local storage, queues denied Consent Mode defaults, loads `gtag.js` only after analytics consent, and sends an explicit GA4 `page_view` only after the library reports that it is ready. It tracks subsequent App Router pathname changes. The footer provides a persistent preference-control path. The measurement ID is supplied through `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
 
