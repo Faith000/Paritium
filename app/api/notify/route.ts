@@ -47,7 +47,11 @@ export async function POST(request: Request) {
   });
 
   if (!response.ok) {
-    const errorMessage = await getBrevoErrorMessage(response);
+    const errorMessage = await getBrevoErrorMessage(response, {
+      hasApiKey: Boolean(apiKey),
+      keyFormatLooksValid: apiKey.startsWith("xkeysib-"),
+      listId
+    });
 
     return NextResponse.json(
       {
@@ -66,7 +70,7 @@ export async function POST(request: Request) {
 }
 
 function getBrevoApiKey() {
-  return process.env.BREVO_API_KEY?.trim() ?? "";
+  return stripWrappingQuotes(process.env.BREVO_API_KEY?.trim() ?? "");
 }
 
 function getBrevoListId() {
@@ -79,12 +83,27 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-async function getBrevoErrorMessage(response: Response) {
+async function getBrevoErrorMessage(
+  response: Response,
+  context: {
+    hasApiKey: boolean;
+    keyFormatLooksValid: boolean;
+    listId: number;
+  }
+) {
   try {
     const payload = (await response.json()) as {
       code?: string;
       message?: string;
     };
+
+    console.error("Brevo waitlist request failed", {
+      brevoCode: payload.code,
+      brevoMessage: payload.message,
+      keyFormatLooksValid: context.keyFormatLooksValid,
+      listId: context.listId,
+      status: response.status
+    });
 
     if (payload.code === "duplicate_parameter") {
       return "You are already on the list.";
@@ -100,6 +119,23 @@ async function getBrevoErrorMessage(response: Response) {
 
     return payload.message;
   } catch {
+    console.error("Brevo waitlist request failed", {
+      hasApiKey: context.hasApiKey,
+      keyFormatLooksValid: context.keyFormatLooksValid,
+      listId: context.listId,
+      status: response.status
+    });
     return null;
   }
+}
+
+function stripWrappingQuotes(value: string) {
+  if (
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
+    return value.slice(1, -1).trim();
+  }
+
+  return value;
 }
