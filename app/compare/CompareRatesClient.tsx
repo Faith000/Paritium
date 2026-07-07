@@ -60,23 +60,6 @@ function getPairCookie() {
   );
 }
 
-function getStoredAmount() {
-  try {
-    return window.localStorage.getItem("paritium:sendAmount");
-  } catch {
-    return null;
-  }
-}
-
-function getAmountCookie() {
-  return (
-    document.cookie
-      .split("; ")
-      .find((cookie) => cookie.startsWith("paritium_send_amount="))
-      ?.split("=")[1] ?? null
-  );
-}
-
 function getValidAmount(amountValue: string | null) {
   const amount = Number(amountValue);
 
@@ -98,16 +81,6 @@ function persistSelectedPair(pair: CurrencyPair) {
   document.cookie = `paritium_selected_pair=${pair}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
-function persistSendAmount(amount: number) {
-  try {
-    window.localStorage.setItem("paritium:sendAmount", amount.toString());
-  } catch {
-    // Browsers can block localStorage in private or embedded contexts.
-  }
-
-  document.cookie = `paritium_send_amount=${amount}; path=/; max-age=2592000; SameSite=Lax`;
-}
-
 export default function CompareRatesClient({
   pairs,
   ratesByPair
@@ -120,12 +93,15 @@ export default function CompareRatesClient({
   const initialPairLabel =
     pairs.find((pair) => pair.value === initialPair)?.label ?? "GBP → NGN";
   const [initialFromCurrency, initialToCurrency] = initialPairLabel.split(" → ");
-  const initialAmount = getValidAmount(searchParams.get("amount")) ?? 1000;
+  const initialUrlAmount = getValidAmount(searchParams.get("amount"));
+  const initialAmount = initialUrlAmount ?? 1000;
   const [selectedPair, setSelectedPair] = useState<CurrencyPair>(initialPair);
   const [draftFromCurrency, setDraftFromCurrency] = useState(initialFromCurrency);
   const [draftToCurrency, setDraftToCurrency] = useState(initialToCurrency);
   const [sendAmount, setSendAmount] = useState(initialAmount);
-  const [draftSendAmount, setDraftSendAmount] = useState(initialAmount.toString());
+  const [draftSendAmount, setDraftSendAmount] = useState(
+    initialUrlAmount?.toString() ?? ""
+  );
   const [liveRatesByPair, setLiveRatesByPair] = useState(ratesByPair);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasRestoredEntry, setHasRestoredEntry] = useState(false);
@@ -175,27 +151,19 @@ export default function CompareRatesClient({
   }, [draftPair, hasRestoredEntry]);
 
   useEffect(() => {
-    if (!hasRestoredEntry) return;
-
-    const nextAmount = getValidAmount(draftSendAmount);
-
-    if (nextAmount) {
-      persistSendAmount(nextAmount);
-    }
-  }, [draftSendAmount, hasRestoredEntry]);
-
-  useEffect(() => {
     const pairFromUrl = searchParams.get("pair");
     const amountFromUrl = searchParams.get("amount");
     const storedPair = getStoredPair() ?? getPairCookie() ?? getWindowNamePair();
-    const storedAmount = getStoredAmount() ?? getAmountCookie();
     const nextPair =
       getValidPair(pairFromUrl, pairs) ?? getValidPair(storedPair, pairs);
-    const nextAmount = getValidAmount(amountFromUrl) ?? getValidAmount(storedAmount);
+    const nextAmount = getValidAmount(amountFromUrl);
 
     if (nextAmount) {
       setSendAmount(nextAmount);
       setDraftSendAmount(nextAmount.toString());
+    } else {
+      setSendAmount(1000);
+      setDraftSendAmount("");
     }
 
     if (!nextPair) {
@@ -324,6 +292,7 @@ export default function CompareRatesClient({
                 inputMode="decimal"
                 min="0"
                 onChange={(event) => setDraftSendAmount(event.target.value)}
+                placeholder="0.00"
                 type="number"
                 value={draftSendAmount}
               />
@@ -341,15 +310,15 @@ export default function CompareRatesClient({
 
               if (!nextPair) return;
 
-              const nextAmount = getValidAmount(draftSendAmount) ?? 1000;
+              const validDraftAmount = getValidAmount(draftSendAmount);
+              const nextAmount = validDraftAmount ?? 1000;
 
               setDraftFromCurrency(nextFromCurrency);
               setDraftToCurrency(nextToCurrency);
-              setDraftSendAmount(nextAmount.toString());
+              setDraftSendAmount(validDraftAmount ? nextAmount.toString() : "");
               setSelectedPair(nextPair);
               setSendAmount(nextAmount);
               persistSelectedPair(nextPair);
-              persistSendAmount(nextAmount);
               trackAnalyticsEvent("currency_pair_selected", {
                 cta_name: "see_todays_rates",
                 currency_pair: nextPair,

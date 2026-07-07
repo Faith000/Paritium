@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 
 type NotifyRequestBody = {
@@ -49,7 +50,9 @@ export async function POST(request: Request) {
   if (!response.ok) {
     const errorMessage = await getBrevoErrorMessage(response, {
       hasApiKey: Boolean(apiKey),
+      keyFingerprint: getKeyFingerprint(apiKey),
       keyFormatLooksValid: apiKey.startsWith("xkeysib-"),
+      keyLength: apiKey.length,
       listId
     });
 
@@ -87,7 +90,9 @@ async function getBrevoErrorMessage(
   response: Response,
   context: {
     hasApiKey: boolean;
+    keyFingerprint: string;
     keyFormatLooksValid: boolean;
+    keyLength: number;
     listId: number;
   }
 ) {
@@ -100,7 +105,9 @@ async function getBrevoErrorMessage(
     console.error("Brevo waitlist request failed", {
       brevoCode: payload.code,
       brevoMessage: payload.message,
+      keyFingerprint: context.keyFingerprint,
       keyFormatLooksValid: context.keyFormatLooksValid,
+      keyLength: context.keyLength,
       listId: context.listId,
       status: response.status
     });
@@ -121,12 +128,18 @@ async function getBrevoErrorMessage(
   } catch {
     console.error("Brevo waitlist request failed", {
       hasApiKey: context.hasApiKey,
+      keyFingerprint: context.keyFingerprint,
       keyFormatLooksValid: context.keyFormatLooksValid,
+      keyLength: context.keyLength,
       listId: context.listId,
       status: response.status
     });
     return null;
   }
+}
+
+function getKeyFingerprint(value: string) {
+  return createHash("sha256").update(value).digest("hex").slice(0, 12);
 }
 
 function stripWrappingQuotes(value: string) {

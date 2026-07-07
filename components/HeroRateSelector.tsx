@@ -27,23 +27,15 @@ export default function HeroRateSelector({
   const [openDropdown, setOpenDropdown] = useState<"from" | "to" | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const draftPair = getPairValue(pairs, fromCurrency, toCurrency);
-  const compareHref = `/compare?pair=${draftPair ?? "GBP_NGN"}&amount=${encodeURIComponent(
-    normalizeAmount(sendAmount).toString()
-  )}#rates-title`;
+  const compareHref = buildCompareHref(draftPair ?? "GBP_NGN", sendAmount);
 
   useEffect(() => {
     const storedPair = getStoredPair() ?? getPairCookie() ?? getWindowNamePair();
     const nextPair = pairs.find((pair) => pair.value === storedPair);
-    const nextAmount = getStoredAmount() ?? getAmountCookie();
-    const shouldRestoreAmount = !isPageRefresh();
 
     if (nextPair) {
       setFromCurrency(nextPair.label.split(" → ")[0]);
       setToCurrency(nextPair.label.split(" → ")[1]);
-    }
-
-    if (shouldRestoreAmount && nextAmount !== null && isValidAmount(nextAmount)) {
-      setSendAmount(nextAmount);
     }
 
     setHasRestoredEntry(true);
@@ -68,14 +60,6 @@ export default function HeroRateSelector({
       persistSelectedPair(draftPair);
     }
   }, [draftPair, hasRestoredEntry]);
-
-  useEffect(() => {
-    if (!hasRestoredEntry) return;
-
-    if (isValidAmount(sendAmount)) {
-      persistSendAmount(Number(sendAmount));
-    }
-  }, [hasRestoredEntry, sendAmount]);
 
   return (
     <div className="hero-route-launcher">
@@ -148,7 +132,6 @@ export default function HeroRateSelector({
             if (!nextPair) return;
 
             persistSelectedPair(nextPair);
-            persistSendAmount(normalizeAmount(sendAmount));
             trackAnalyticsEvent("currency_pair_selected", {
               cta_name: "see_todays_rates",
               currency_pair: nextPair,
@@ -162,6 +145,16 @@ export default function HeroRateSelector({
       </div>
     </div>
   );
+}
+
+function buildCompareHref(pair: CurrencyPair, amountValue: string) {
+  const searchParams = new URLSearchParams({ pair });
+
+  if (isValidAmount(amountValue)) {
+    searchParams.set("amount", normalizeAmount(amountValue).toString());
+  }
+
+  return `/compare?${searchParams.toString()}#rates-title`;
 }
 
 function CurrencyDropdown({
@@ -239,14 +232,6 @@ function isValidAmount(value: string | null) {
   return Number.isFinite(amount) && amount > 0;
 }
 
-function isPageRefresh() {
-  const navigationEntry = performance.getEntriesByType("navigation")[0] as
-    | PerformanceNavigationTiming
-    | undefined;
-
-  return navigationEntry?.type === "reload";
-}
-
 function getPairValue(
   pairs: PairOption[],
   fromCurrency: string,
@@ -277,23 +262,6 @@ function getWindowNamePair() {
   return window.name.match(/paritium_selected_pair=([A-Z_]+)/)?.[1] ?? null;
 }
 
-function getStoredAmount() {
-  try {
-    return window.localStorage.getItem("paritium:sendAmount");
-  } catch {
-    return null;
-  }
-}
-
-function getAmountCookie() {
-  return (
-    document.cookie
-      .split("; ")
-      .find((cookie) => cookie.startsWith("paritium_send_amount="))
-      ?.split("=")[1] ?? null
-  );
-}
-
 function persistSelectedPair(pair: CurrencyPair) {
   try {
     window.localStorage.setItem("paritium:selectedPair", pair);
@@ -303,16 +271,6 @@ function persistSelectedPair(pair: CurrencyPair) {
 
   window.name = `paritium_selected_pair=${pair}`;
   document.cookie = `paritium_selected_pair=${pair}; path=/; max-age=2592000; SameSite=Lax`;
-}
-
-function persistSendAmount(amount: number) {
-  try {
-    window.localStorage.setItem("paritium:sendAmount", amount.toString());
-  } catch {
-    // Browsers can block localStorage in private or embedded contexts.
-  }
-
-  document.cookie = `paritium_send_amount=${amount}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
 function CurrencyFlag({ flag, label }: { flag: string; label: string }) {

@@ -194,7 +194,7 @@ Current connector architecture:
 
 - Lead with the actual comparison experience, not a marketing-only landing page.
 - The homepage hero should launch users into the Compare Rates table. Keep the selector CTA linked to `/compare?pair=...#rates-title`; do not reintroduce a best-rate summary card in the hero.
-- Homepage and Compare Rates controls should remember the user's most recent valid currency pair and send amount in browser storage/cookies, then restore that entry when the user returns to the homepage. On a hard homepage refresh, the amount input should be empty and show a `0.00` placeholder instead of displaying a saved or default amount.
+- Homepage and Compare Rates controls may remember the user's most recent valid currency pair, but must not restore a previously entered send amount from browser storage/cookies. On fresh visits and hard refreshes, amount inputs should be empty and show a `0.00` placeholder. Only an explicit `amount` URL parameter should prefill the Compare Rates amount field for that specific comparison.
 - Keep copy transparent, practical, and confidence-building.
 - Use "published rates" language when describing data.
 - Mention that checkout rates may differ because providers can change rates or fees.
