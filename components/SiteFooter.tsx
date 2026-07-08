@@ -48,7 +48,7 @@ export default function SiteFooter() {
           Paritium is a rate comparison service. We are not a money transfer
           provider.
         </p>
-        <p>© 2026 Paritium | Greenvine Technologies & EccentricLLC</p>
+        <p>© 2026 Paritium | Greenvine Technologies & Eccentric LLC</p>
       </div>
     </footer>
   );

@@ -54,7 +54,7 @@ export default function PrivacyPage() {
             <h2 id="privacy-overview">Our approach to privacy</h2>
             <p>
               Paritium is an exchange-rate comparison and discovery platform
-              developed by Greenvine Technologies and EccentricLLC. We do not
+              developed by Greenvine Technologies and Eccentric LLC. We do not
               execute money transfers, hold customer funds, or ask for provider
               account credentials, payment card details, or bank account details.
             </p>
@@ -258,7 +258,7 @@ export default function PrivacyPage() {
             <div className="legal-contact">
               <span>Privacy questions and requests</span>
               <a href="mailto:hello@paritium.com">hello@paritium.com</a>
-              <p>Paritium | Greenvine Technologies &amp; EccentricLLC</p>
+              <p>Paritium | Greenvine Technologies &amp; Eccentric LLC</p>
             </div>
           </section>
         </article>
