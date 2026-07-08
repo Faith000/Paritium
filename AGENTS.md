@@ -35,7 +35,7 @@ Paritium is a Next.js exchange-rate comparison website for consumers, travellers
 
 Product URL: `https://paritium.com`
 
-Primary stakeholders: Greenvine Technologies & EccentricLLC.
+Primary stakeholders: Greenvine Technologies & Eccentric LLC.
 
 Development lead named in the PRD: Faith.
 

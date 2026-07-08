@@ -56,7 +56,7 @@ export default function AboutPage() {
           <article>
             <h3>Who is behind Paritium?</h3>
             <p>
-              Paritium is developed by Greenvine Technologies and EccentricLLC,
+              Paritium is developed by Greenvine Technologies and Eccentric LLC,
               combining product strategy, fintech expertise, and engineering to
               make exchange-rate comparison clearer and more trustworthy.
             </p>

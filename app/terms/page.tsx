@@ -57,7 +57,7 @@ export default function TermsPage() {
             <h2 id="terms-overview">Comparison, not money transfer</h2>
             <p>
               Paritium is an exchange-rate comparison and discovery platform
-              developed by Greenvine Technologies and EccentricLLC. Paritium does
+              developed by Greenvine Technologies and Eccentric LLC. Paritium does
               not execute transfers, receive or hold customer funds, provide
               payment accounts, or act as an agent for a transfer provider.
             </p>
@@ -297,7 +297,7 @@ export default function TermsPage() {
             <div className="legal-contact">
               <span>Terms and service questions</span>
               <a href="mailto:hello@paritium.com">hello@paritium.com</a>
-              <p>Paritium | Greenvine Technologies &amp; EccentricLLC</p>
+              <p>Paritium | Greenvine Technologies &amp; Eccentric LLC</p>
             </div>
           </section>
         </article>
